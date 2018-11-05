@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name='description' content='A JavaScript tool for multiple form inputs' />
+<meta name='author' content='Joe Golembieski, SoftMoon-WebWare' />
+<meta name='copyright' content='Copyright © 2010, 2012, 2013, 2015 Joe Golembieski, SoftMoon-WebWare' />
+<title>FormFieldGenie instructions from SoftMoon WebWare</title>
+<style type="text/css">
+body, header, div, h1, h2, h4, img, ul, li, menu, a {
+	margin: 0;
+	padding: 0; }
+body {
+	min-width: 800px;
+	font-family: Times, "Times New Roman", serif;
+	color: #000000;
+	background: #FFDEAD url(images/SoftMoon.repeat-y.png) repeat-y; }
+#top {
+	position: relative;
+	height: 700px;
+	min-height: 42em;
+	background: #FFDEAD url(images/SoftMoon.repeat-x.png) repeat-x; }
+#top, #content, footer {
+	min-width: 62em;
+	opacity: .62;
+	-moz-opacity: .62;
+	filter: alpha(opacity=62); }
+#top h1:first-child {
+	font-size: 1.618em;
+	font-weight: bold;
+	font-family: "Cooper Black", serif;
+	padding: .618em 0 0 1em; }
+#top h1 span {
+	padding: 0 0 0 2.618em;
+	font-size: .764em }  /* ≈ Φ + ((1-Φ) - (1-Φ)*Φ) */
+#top h1:last-child {
+	position: absolute;
+	bottom: 17px;
+	left: 0px;
+	text-align: center;
+	width: 100%; }
+#top figure {
+	position: absolute;
+	top: 2.618em;
+	left: 1em; }
+#logo {
+	font-size: 1.618em; /*for alt text*/
+	font-weight: bold;
+	line-height: 150%; }
+#top figcaption {
+	font-size: 1.382em;
+	font-weight: bold;
+	text-align: center;
+	width: 27em; }
+#top figcaption span {
+	display: block;
+	font-style: oblique; }
+#top figcaption span em {
+	text-transform: uppercase;
+	font-weight: bold }
+#content {
+	min-width: 57em;
+	width: 100%;  /* fix MSIE crash 'n' trash  (yet another "hasLayout" bug?) */
+	background: #FFDEAD;
+	text-align: center; }
+#content h2 {
+	margin-top: 2em; }
+#content h3 {
+	margin: 0; }
+#content p {
+	text-align: justify;
+	text-indent: -.618em;
+	font-size: 1.236em;
+	width: 27em;
+	margin: 0 auto 0 auto;
+	padding: 0 1em 1em 1em; }
+#content p * {
+	text-indent: 0; }
+#content p:first-letter {
+	font-size: 1.618em;
+	font-weight: bold;
+	color: #000040; }
+#content p code {
+  white-space: nowrap; }
+#content > code {
+	white-space: pre; }
+#content > code,
+#content ul,
+#content dl {
+	margin: 0 auto 2em auto;
+	font-size: 1.236em;
+	display: block;
+	text-align: left;
+	list-style: none;
+	max-width: 47em; }
+#content li { margin-top: .618em; }
+#content ul.bulletted {
+	list-style: circle; }
+#content ul.bulletted li code {
+	display: inline;
+	white-space: pre; }
+#content dt {
+	margin-top: 1em;
+	font-weight: bold;
+	font-size: 116.2%; }
+#content > .notice {
+	font-size: 1.236em; }
+#content > ul + .notice {
+	margin: -1.618em auto 1em auto; }
+#content .notice {
+	display: block;
+	color: #800000; }
+footer {
+	position: relative;
+	height: 100px;
+	background: #FFDEAD url(images/SoftMoon.footer.back.png) repeat-x bottom; }
+footer p {
+	position: absolute;
+	left: 1.618em;
+	bottom: .618em;
+	font-size: .78em;
+	font-weight: bold; }
+footer .notice {
+	white-space: nowrap;
+	margin-right: 7.618em; }
+dd mark,
+.numerance {
+	font-size: .618em;
+	vertical-align: .618em;
+	line-height: 100%; }
+.macronym {
+	display: inline;
+	font-size: .763924em;
+	vertical-align: .236076em;
+	line-height: 100%; }
+acronym.macronym {
+	font-size: .382em;
+	vertical-align: 1.1618em;
+	border-bottom: none; }
+mark {
+	background-color: inherit; }
+kbd span {
+	display: inline-block;
+	position: static;
+	border: 1px solid #8080FF;
+	border-bottom: 2px solid #404080;
+	border-right: 2px solid #404080;
+	border-radius: 1.618em / 2em;
+	color: white;
+	background-color: #202040;
+	text-align: center;
+	margin: 0 .162em;
+	padding: 0 .618em;
+	font-size: 85.4%;  }
+</style>
+</head>
+<body>
+<header id='top'>
+<h1>Custom Web Software Development for the 21<mark class='numerance'>st</mark> Century<acronym class='macronym' title="service mark">SM</acronym></h1>
+<figure>
+<img id='logo' src="images/SoftMoon.gif" alt="SoftMoon WebWare" />
+<figcaption><acronym>PHP</acronym>, <acronym>SQL</acronym>s, JavaScript<mark class='macronym'>™</mark>, <acronym>Ajax</acronym>, <acronym>HTML5</acronym>, <acronym>XHTML</acronym>, &amp; <acronym>CSS3</acronym>:
+<span>Innovative Enterprise level Scripting for interactive sites, <acronym title='software as a service'>SaaS</acronym>, &amp; cross-platform desktop apps</span></figcaption>
+</figure>
+<h1>FormFieldGenie 3.0 Text-Input Auto-Pop-Up</h1>
+</header>
+<div id='content'>
+<p>This JavaScript<span class='macronym'>™</span> powered multifunctional class allows you to create an
+end-user-manipulatable <acronym>HTML</acronym> form
+that requires an unknown number of text-input form fields.&nbsp; When you don’t want to limit your visitors to a
+minimal number of input options, but don’t want your page display to be bloated with a large number of empty input boxes,
+this is the utility you need.&nbsp;
+Since the version 2.2 release, an end-user can even cut, copy, and paste entire
+sections of an <acronym>HTML</acronym> form to/from multi-clip clipboards.&nbsp;
+We use this class in our
+<a href="http://softmoon-webware.com/MasterColorPicker_instructions.php">MasterColorPicker</a> package,
+and you can see useful working integrated examples there
+(once for the “MyPalette” sub-application, and again for the “Color Filter” extension).</p>
+
+<p><em>What</em> do you use this for?&nbsp; When you have to ask someone to list each of something
+you request, and they may need one (1) form field, or they may need fifty (50), or anywhere in between or even more!&nbsp;
+Consider asking about someone’s children and grandchildren.&nbsp; In one family there may be two children,
+each with one grandchild.&nbsp;
+What about a large family with 7 children, each with an average of 5 grandchildren?&nbsp;
+Do you create a form that accommodates the large family, forcing the small family to wade through your web page
+like trying to navigate swamp water?&nbsp;  And what about the family with 12 children and 78 grandchildren?&nbsp;
+Of course there are functions that say &ldquo;click this button to create a new form field&rdquo;.
+Clicking once or twice may be OK.&nbsp; I've seen that approach used to upload files,
+and it annoyed me when I had to upload two dozen, simply because it broke the &ldquo;flow&rdquo; selecting each file;
+and that was all point and click.&nbsp;
+When you have to actually type in a phrase, then switch to the mouse to click, then back to the keyboard...
+This is <strong>much</strong> easier.</p>
+
+<p>The best way to understand this class is to exemplify it, so we created a
+<a href="http://softmoon-webware.com/test_FormFieldGenie-js.php" target="_blank">working demo</a>.&nbsp;
+You should also view the highlighted
+<a href="http://softmoon-webware.com/code/test_FormFieldGenie-js_sourcecode.htm" target="_blank">demo source code</a>
+to understand what is happening, why and how.&nbsp;
+You can download the JavaScript file from our <a href='http://softmoon-webware.com/OpenSource.php'>download page</a>.</p>
+
+<p>Using this class is simple and strait-forward, requiring only a few
+JavaScript<span class='macronym'>™</span> event handlers be added to the form field(s)
+you want duplicated (cloned).&nbsp; But it is no simple class: not only can it clone the form field
+that the event handlers are attached to, but any associated form fields, their labels,
+and any other <acronym>DOM</acronym> nodes that go along.&nbsp; We will attempt to explain its use in terms that
+a non-programmer can understand, so you can incorporate this class successfully in your site,
+but a basic amount of <acronym>HTML</acronym> understanding and a minimum amount of knowledge on using
+JavaScript<span class='macronym'>™</span> in your <acronym>HTML</acronym> pages is required.&nbsp;
+It has a list of options that allow you to fine-tune the way it works making it incredibly versatile.&nbsp;
+Plus it allows plug-in callback functions that allow it infinite flexibility.&nbsp;
+It intelligently updates the name associated with each form field cloned based on each individual name;
+if your given name is incompatible with this class’ capabilities, your custom plugin can handle it.&nbsp;
+And it does all this <strong>without <em>any</em></strong> additional markup to your <acronym>HTML</acronym>.</p>
+
+<p>When adding a new form-field or group of form-fields (using the <code>popNewField()</code> method),
+the FormFieldGenie can create (clone) one based on what already exists in the form (more on that below),
+or you can explicitly give it a form-field or group of form-fields to clone.&nbsp;
+You may define an explicit DOM node (form-field or group of form-fields) to clone
+when creating an instance of the FormFieldGenie;&nbsp; for example:</p>
+<code>myGenie=new SoftMoon.WebWare.FormFieldGenie({……my options……}, ……my DOM node to clone……);
+myGenie.popNewField(……)</code>
+
+<p>After creating an instance of the FormFieldGenie, you may also
+set the instance.clone (<code>myGenie.clone</code> in these examples) to the explicit <acronym>DOM</acronym> node
+(form-field or group of form-fields) you want to clone (if any).&nbsp;
+An example of passing an explicit node to clone:</p>
+<code>myGenie=new SoftMoon.WebWare.FormFieldGenie({……my options……});
+myGenie.clone= ……my DOM node to clone……
+myGenie.popNewField(………)</code>
+
+<p>The publicly accessible properties of a FormFieldGenie instance are:</p>
+<ul>
+	<li>.clone</li>
+	<li>.clipboard</li>
+	<li>.defaults</li>
+	<li>.tabbedOut</li>
+	<li>.catchKey &nbsp; ← this is <strong><em>not</em></strong> defined natively, but is recognized by the
+			<code>catchTab</code> method of an instance.</li>
+</ul>
+
+<p>The publicly accessible methods of a FormFieldGenie instance are:</p>
+<dl>
+	<dt><code>popNewField(fieldNodeGroup, opts)</code></dt>
+		<dd>returns <code>true</code> if a new <code>fieldNodeGroup</code> is ‘popped’ or <code>false</code> if not.</dd>
+	<dt><code>deleteField(fieldNodeGroup, opts)</code></dt>
+		 <dd>returns <code>true</code> if the <code>fieldNodeGroup</code> was deleted, <code>false</code> if not.</dd>
+	<dt><code>cutField(fieldNodeGroup, opts)</code></dt>
+		 <dd>returns <code>true</code> if the <code>fieldNodeGroup</code> was deleted, <code>false</code> if not.&nbsp;
+			<code>fieldNodeGroup</code> will always be copied to the clipboard.</dd>
+	<dt><code>copyField(fieldNodeGroup, opts)</code></dt>
+		 <dd>returns <code>null</code>.  <code>fieldNodeGroup</code> will always be copied to the clipboard.</dd>
+	<dt><code>pasteField(fieldNodeGroup, opts)</code></dt>
+		 <dd>returns <code>false</code> if the clipboard clip is empty, <code>true</code> if it is pasted.</dd>
+</dl>
+
+<p>Note you can paste <strong>two</strong> different ways using <strong>three</strong> different methods:</p>
+<ul class='bulletted'>
+		<li>paste over an existing <code>fieldNodeGroup</code> using <code>pasteField(fieldNodeGroup, {clip: %%your-clip-reference%%})</code></li>
+		<li>insert a new <code>fieldNodeGroup</code> using <code>pasteField(fieldNodeGroup, {doso: 'insert', clip: %%your-clip-reference%%})</code></li>
+		<li>insert a new <code>fieldNodeGroup</code> using <code>popNewField(fieldNodeGroup, {doso: 'paste', clip: %%your-clip-reference%%})</code></li>
+</ul>
+<span class='notice'>( see “clip” in “options” below for more info on %%your-clip-reference%% )</span>
+<p>The difference between <code>popNewField()</code> and <code>pasteField()</code>
+is that <code>pasteField()</code> will return <code>false</code> if the clip is empty,
+while <code>popNewField()</code> will simply pop a new “blank” clone if the clip is empty.&nbsp;
+After creating an instance of the FormFieldGenie,
+the clipboard Object may be accessed through <code>instance.clipboard</code>;&nbsp;
+each clipboard Object property may contain an individual clip (<acronym>DOM</acronym> node).</p>
+
+<p>The first parameter passed to this class’ methods is the entire
+<acronym>DOM</acronym> node you want auto-regenerated, deleted, cut, copied, inserted before, or pasted-over.&nbsp;
+A quick look at the source code of the demonstration example will help clarify this.&nbsp;
+If you only need the form field itself repeated, pass the value of <code>this</code> to the function.&nbsp;
+Remember, in an event handler for form fields, the keyword <code>this</code> refers to the
+<acronym>DOM</acronym> node of the form-field itself.&nbsp;
+If the field has a <code>&lt;label&gt;</code> tag (or any other tag) around it that you want cloned also,
+simply pass <code>this.parentNode</code>.&nbsp;
+If you want to clone a whole group of fields and associated text,
+simply repeat <code>parentNode</code> in a chain as many times as needed to move up the <acronym>DOM</acronym> tree.&nbsp;</p>
+
+<p>From there, the class makes one requirement:
+there must be a tag enclosing the <acronym>DOM</acronym> nodes you want cloned.&nbsp;
+It is into this enclosing tag the clones are added.&nbsp; First, let’s be clear that <em>any</em>
+<acronym>HTML</acronym> “element” tags may be used; it does not matter to the class.&nbsp;
+For the sake of discussion, we will refer to these these as follows:</p>
+<ul>
+<li>the &lt;input&gt; and &lt;textarea&gt; tags themselves are referred to as the <code>fieldNode</code>
+(only <code>&lt;input&gt; type='text'</code>, <code>type='password'</code>, or <code>type='file'</code>).&nbsp;
+These <code>fieldNode</code>s need to have the proper event handlers attached.</li>
+<li>the entire <acronym>DOM</acronym> node you want cloned is referred to as the <code>fieldNodeGroup</code></li>
+<li>the tag enclosing the cloned <acronym>DOM</acronym> nodes is referred to as the <code>fieldNodeGroupFieldset</code></li>
+</ul>
+
+<p>The <code>fieldNodeGroupFieldset</code> may contain any other <acronym>HTML</acronym> besides the clones;
+<strong>but</strong> the clones will always be added to the <code>fieldNodeGroupFieldset</code>
+directly following the last <code>fieldNodeGroup</code>.&nbsp;
+See also the <code>groupClass</code> and <code>groupTag</code> options described below.&nbsp;
+Beyond this, you are free to develop your page the way you see fit.&nbsp;</p>
+
+<p>Any time your keyboard cursor is focused on a <code>fieldNode</code> and then you leave it
+by pressing the <kbd><span>tab</span></kbd> key or by clicking the mouse button somewhere else,
+the class looks at all the <code>fieldNodeGroup</code>s within <code>fieldNodeGroupFieldset</code>.&nbsp;
+If any are empty (except for the <em>last</em> one), by default it deletes them
+(you can change this default action with options; see below).&nbsp;
+It then looks within the last <code>fieldNodeGroup</code> and
+by default finds the <em>first</em> text-based &lt;input&gt; tag
+(only <code>&lt;input&gt; type='text'</code>, <code>type='password'</code>, or <code>type='file'</code>),
+or if there are no &lt;input&gt;s, by default finds the <em>first</em> &lt;textarea&gt;,
+then looks to see if anything was typed in (or similar for <code>type='file'</code>).&nbsp;
+If this <code>fieldNode</code> has been filled by the user,
+the class &lsquo;pops’ a new <code>fieldNodeGroup</code>.</p>
+
+<p>If the end-user pressed the <kbd><span>tab</span></kbd> key from within a <code>fieldNode</code> (to exit it)
+and a new <code>fieldNodeGroup</code> was popped,
+the cursor is focused within a specified <code>fieldNode</code> of the new <code>fieldNodeGroup</code>.&nbsp;
+If nothing was popped, the cursor is passed onto the next form field as usual.&nbsp;
+If the end-user clicked out of the <code>fieldNode</code>, the usual action is taken depending on where you click,
+whether or not a new <code>fieldNodeGroup</code> was popped.</p>
+
+<p>That sums up the main framework of the class.&nbsp;
+Its true power begins to shine when you look at how it updates the names associated with each
+form field cloned, and how the available options you can pass to the class can modify the default
+actions of the main framework and the process of updating the field names.&nbsp;
+This gives it the ability to work with virtually any <acronym>HTML</acronym> form of any complexity,
+and the corresponding supporting server side script.</p>
+
+<p>When this class updates a name, it considers several things.&nbsp; Is the name indexed, or not?
+(i.e. <code>name[index]</code> or <code>name[index][index]</code> etc.)&nbsp; If it is indexed,
+is the last index virtual? (i.e. <code>name[]</code> or <code>name[index][]</code> etc.)&nbsp;
+Remember in <acronym>PHP</acronym>, when multiple form fields return the same <strong>virtual</strong> indexed name
+they are automatically placed into a sequentially numbered array.&nbsp;
+If the field’s name is not indexed, this function considers
+whether the last characters are numeric digits, or not.
+(i.e. <code>name</code> or <code>name123</code> etc.)&nbsp;
+Remember when a form returns multiple fields of the same name without using virtual indexes,
+the last one overwrites all the others.&nbsp;
+It should be mentioned here that if these built-in processes for updating the name don’t suit your needs,
+you may write your own plug-in that can do anything you want!&nbsp;
+We’ll look at that in the section on options, below.&nbsp;
+The one other thing to be considered when updating the name is a special case involving the
+<strong>value</strong> of checkboxes and radio-buttons; this involves reasons similar to those involved when
+updating virtually indexed names, and we will take a look at this further down...</p>
+
+<h3>Virtually Indexed Names</h3>
+<p>Lets look at these first.&nbsp; There is generally no need to do anything to these names.&nbsp;
+The server side script (<acronym>PHP</acronym>) handles them as they should be.&nbsp;
+The exception is when you use checkboxes and radio buttons.&nbsp;
+Take a look at the source code of the demonstration example and also at the test-demo itself.&nbsp;
+Notice how the nickname section uses checkboxes within the <code>fieldNodeGroup</code> to be cloned.&nbsp;
+If we simply clone these and leave their names unchanged, the resulting data no longer co-ordinates with
+its associate data.&nbsp; You get a sequential array of all the checkboxes checked by the user,
+but there is no way to tell which array element corresponds to which nickname.&nbsp;
+So checkboxes and radio buttons with virtually indexed names are instead treated as fully indexed names.</p>
+
+<h3>Fully Indexed Names</h3>
+<p>The class looks for the <strong>last</strong> index in the name that is <strong>numeric</strong>
+and increases it by one for each new field popped.&nbsp; Note this also applies to checkboxes and radio buttons
+with virtually indexed names (see the paragraph above).&nbsp;
+If no index is found to be numeric, the name is left unchanged.</p>
+
+<h3>Non-indexed Names</h3>
+<p>Non-indexed names without digits at the end are simply left alone.&nbsp;
+This is generally only useful for radio buttons or &lt;button&gt; tags.&nbsp;
+Names that end in a sequence of digits have that sequence numerically increased by one for each new field popped.&nbsp;
+Pay close attention to the favorite cars example and the data it produces when the form is submitted.&nbsp;
+Note how only the last sequence of digits is increased, and the rest are left alone.</p>
+
+<h3>Special case: checkboxes and radio buttons with &ldquo;indexed&rdquo; <em>values</em></h3>
+<p>In some cases the need arises for the <strong>value</strong> of these form fields to be updated, not the name.&nbsp;
+The favorite pets section in the demonstration exemplifies this.&nbsp;
+If the <strong>value</strong> is a number within square brackets
+(i.e. <code>[0]</code> or <code>[1]</code> or <code>[1756]</code> etc.)
+it can be updated <strong>instead</strong> of the name.&nbsp;
+Furthermore, you can control what style name (virtual, indexed, non-indexed, or combinations)
+allows updating the value; while allowing flexibility, this becomes truly invaluable when
+<code>fieldNodeGroup</code>s are nested within each other.&nbsp;
+Before we look at how to control this using options, let’s look at options in general.</p>
+
+<h2>Passing Options to the FormFieldGenie</h2>
+
+<p>Passing options to this class is simple: use an object with properties named accordingly.&nbsp;
+Any properties may be included or not, making it simple to control any option without worrying about the others.&nbsp;
+If you are not so familiar with JavaScript<span class='macronym'>™</span>, pay close attention to the
+demonstration example and how to define an object right in the event handler text.&nbsp;
+You can also define your object in a separate <code>&#60;script&#62;&#60;/script&#62;</code>,
+then simply pass it to the class by name.&nbsp; If you don’t understand how to do this,
+please refer to a good book on JavaScript<span class='macronym'>™</span> programming.&nbsp;</p>
+
+<p>Options may be defined or passed at three levels: global defaults, instance defaults, and when calling a method.&nbsp;
+The class’ methods, <code>popNewField()</code>, <code>cutField()</code>, <code>copyField()</code>,
+<code>pasteField()</code>, and <code>deleteField()</code>, only take two parameters
+(the <code>fieldNodeGroup</code> and the options object).&nbsp; By setting the option values of the
+<code>defaults</code> property of <code>FormFieldGenie</code>, you can control the option defaults globally.&nbsp;
+When creating an instance (<code>myGenie = new&nbsp;SoftMoon.WebWare.FormFieldGenie( { ...options... } )</code>)
+you can override the global defaults, and when calling instance methods you can override the instance defaults.</p>
+
+<p>The options object may contain these following properties: (and more, but they will be ignored)</p>
+<dl>
+<dt>maxTotal:&nbsp; <var>number</var></dt>
+<dd>maximum number of clones (<code>fieldNodeGroups</code>) in the <code>fieldNodeGroupFieldset</code>.&nbsp;
+Note that the default value is 100.&nbsp;
+There is no minTotal, as this would impose restrictions on how the <code>fieldNodeGroupFieldset</code> is structured.&nbsp;
+To retain a minimum total, use a custom function for <code>dumpEmpties</code> (see below) which can make this distinction.</dd>
+
+<dt>indxTier:&nbsp; <var>number</var></dt>
+<dd>Number of index “tiers” to ignore at the end of a name; used to skip over tier(s) when updating names.&nbsp;
+<code>climbTiers</code> must be true (see directly below).&nbsp;
+Example:  name → <code>myField[4][3][2]</code> when <code>indxTier=2</code> the FormFieldGenie updates/modifies the index that contains “4”.&nbsp;
+Note the Genie looks for the <strong><em>next</em> numeric</strong> index, so note the following
+example:  name → <code>myField[4][subsection][3][2]</code>  when <code>indxTier=2</code> the FormFieldGenie updates/modifies the index that contains “4”.
+</dd>
+
+<dt>climbTiers:&nbsp; <code>true | false</code></dt>
+<dd>Check all levels of indices for a numeric value (<code>true</code> is default), or only the last?</dd>
+
+<dt>updateValue:&nbsp; <code>&#34;all&#34; | &#34;non-implicit&#34; | &#34;non-indexed&#34; | &#34;indexed&#34; | &#34;implicit&#34;</code></dt>
+<dd>Controls the application of updating <strong>values</strong> instead of <strong>names</strong> in
+checkbox and radio-button fields that have values formatted similar to <code>&#34;[0]&#34;</code>
+Any other passed condition yields no values updated.
+No passed condition yields the default action <code>&#34;all&#34;</code>.<br />
+<span class='notice'>===↓ examples ↓===</span><pre>
+all             name  name[string]  name[number]  name[]
+non-implicit    name  name[string]  name[number]
+non-indexed     name
+indexed         name[string]  name[number]
+implicit        name[]
+</pre>
+<span class='notice'>===↑ examples only show final indices or lack of; indexed names may have additional indices ↑===</span></dd>
+
+<dt>focusField:&nbsp; <var>number</var></dt>
+<dd><span class='notice'>========= this applies to pasteField() and popNewField() only =========</span>
+Pass the field number (counted from <strong><em>zero</em></strong>)
+of the text/filename field you want the cursor focused on,
+<strong>if</strong> the user pressed the <kbd><span>tab</span></kbd> key or <code>opts.focus=true</code>,
+when popping or when pasting a new fieldNodeGroup.</dd>
+
+<dt>focus: <code>true | false</code></dt>
+<dd><span class='notice'>========= this applies to pasteField() and popNewField() only =========</span>
+If <code>true</code>, the <code>focusField</code> (see above)  will receive focus,
+whether or not the <kbd><span>tab</span></kbd> key was pressed.&nbsp;
+If <code>false</code>, the <code>focusField</code> will not receive focus when the <kbd><span>tab</span></kbd> key is pressed.&nbsp;
+If no value is passed, then the <kbd><span>tab</span></kbd> key will cause the <code>focusField</code> to receive focus
+when popping a new <code>fieldNodeGroup</code>.</dd>
+
+<dt>dumpEmpties:&nbsp; <code>true | false | function(empty_fieldNodeGroupInQuestion, deleteFlag) { …your custom code makes the distinction… }</code></dt>
+<dd>remove emptied fields on the fly?
+<span class='notice'>========= this applies to <code>deleteField()</code> and <code>popNewField()</code> only, and not when inserting or pasting =========</span>
+If a function is supplied, it should return <code>true | false | null</code>
+and if <code>null</code> is returned, the function should remove the field itself.&nbsp;
+If you use <code>deleteField()</code>, the <code>fieldNodeGroup</code> will be removed
+even if <code>dumpEmpties===false</code>;&nbsp;
+however, if <code>dumpEmpties</code> is a function, it will be called with the value of <code>deleteFlag=true</code>
+and its return value (<code>true|false</code>) will be respected.
+</dd>
+
+<dt>checkForEmpty:&nbsp; <code>&#34;all&#34; | &#34;one&#34; | &#34;some&#34;</code></dt>
+<dd><span class='notice'>========= this applies to <code>deleteField()</code> and <code>popNewField()</code> only, and not when inserting or pasting =========</span>
+If set, the corresponding text/filename fields in the <code>fieldNodeGroup</code> will be checked.&nbsp;
+By default only the <strong><em>first</em></strong> one is checked.&nbsp;
+If <code>'one'</code> or <code>'some'</code>, the <code>checkField</code> option should be used also.&nbsp;
+If <code>'some'</code>, each of the <strong><em>first</em></strong> <code>checkField</code> number of fields will be checked.</dd>
+
+<dt>checkField:&nbsp; <var>number</var></dt>
+<dd><span class='notice'>========= this applies to <code>deleteField()</code> and <code>popNewField()</code> only, and not when inserting or pasting =========</span>
+Used in conjunction with <code>checkForEmpty</code><br />
+Pass the field number (counted from <strong><em>zero</em></strong>)
+of the field or fields you want checked for being “empty” when popping.&nbsp;
+If <code>checkForEmpty='some'</code> the each of the first <var>number</var> of fields will be checked.</dd>
+
+<dt>updateName:&nbsp; <code>function(field, indxOffset, fieldNodeGroupFieldset, params)  { …your plugin code… }</code></dt>
+<dd>Pass a plugin callback function to handle the process of updating each name.
+The function will be passed each individual form <acronym>DOM</acronym> object
+(&#60;input&#62; or &#60;textarea&#62; or &#60;select&#62; or &#60;button&#62;)
+one at a time in the <code>field</code> variable.&nbsp;
+The <code>indxOffset</code> variable contains the numerical positional offset
+of the new <code>field</code> compared to the <code>field</code> passed.&nbsp;
+The function should pass back a string of the new name, or <code>null</code>.&nbsp;
+If a string is returned, the name of the <acronym>DOM</acronym> object will be set to that value;&nbsp;
+no need for your function to alter the name directly, unless returning <code>null</code>.&nbsp;
+If <code>null</code> is returned, the usual process of updating the name continues.&nbsp;
+The callback function may do anything it needs including partial updating the name directly
+(to be continued by the usual process), and/or updating the value, and/or updating the parentNode text,
+and/or whatever you can imagine...</dd>
+
+<dt>cbParams:&nbsp; <var>variable</var></dt>
+<dd>This will be passed through to the <code>updateName()</code> plugin callback function as the fourth variable (<var>params</var>),
+and to the <code>isActiveField()</code><mark>†</mark>, <code>cloneCustomizer()</code><mark>‡</mark>,
+<code>eventRegistrar()</code><mark>‡</mark> and <code>groupCusomizer()</code><mark>‡</mark>
+plugin callback functions as the <mark>†</mark>second or <mark>‡</mark>third.&nbsp;
+It may be any type as required by your plugin callback functions,
+but if they share you may want to use an object with separate properties.</dd>
+
+<dt>isActiveField:&nbsp; <code>function(fieldNode, params)  { …your customizing code… }</code></dt>
+<dd>This can replace the standard function to check if a form field is currently active or not;
+i.e. is it disabled, or is it even displayed at all?&nbsp;
+You may add/subtract your own rules, perhaps checking the status of another element.&nbsp;
+Inactive elements will not be considered when deciding to pop a new fieldNodeGroup or dump an empty one.&nbsp;
+The <code>params</code> variable is the user’s call-back parameters (see <code>cbParams</code> above in this list of user-options).&nbsp;
+Your function should return <code>true|false</code>.</dd>
+
+<dt>cloneCustomizer:&nbsp; <code>function(fieldNodeGroup, pasteOver, params)  { …your customizing code… }</code></dt>
+<dd>If there is something special you want to do to each <code>fieldNodeGroup</code> cloned,
+you may pass a function to handle that.&nbsp;
+All field names will have been updated, but the node will not yet have been added to the document.&nbsp;
+The passed variable <code>pasteOver</code> will be <code>true | false | 'paste-over'</code>&nbsp;
+— <code>true</code> if pasting <em>and</em> inserting,
+<code>'paste-over'</code> if pasting <em>over</em> an existing <code>fieldNodeGroup</code> (the old existing one will be discarded).&nbsp;
+The <code>params</code> variable is the user’s call-back parameters (see <code>cbParams</code> above in this list of user-options).&nbsp;
+This function is called only when a new <code>fieldNodeGroup</code> is being popped or pasted over.</dd>
+
+<dt>eventRegistrar:&nbsp; <code>function(fieldNodeGroup, pasteOver, params)  { …your customizing code… }</code></dt>
+<dd>While <acronym>HTML</acronym> attributes including event handlers are cloned when a <acronym>DOM</acronym> node is cloned,
+<acronym>DOM</acronym> level 2 (and similar for <acronym>MSIE</acronym>) event handlers are <strong>not</strong> cloned.&nbsp;
+If you need event handlers registered for any elements in your cloned <code>fieldNodeGroup</code>,
+you must do them “by hand” through this function.&nbsp;
+The function will be passed the <code>fieldNodeGroup</code> <strong>after</strong> it has been added to the document.&nbsp;
+See <code>cloneCustomizer</code> (above) for info on <code>pasteOver</code> and <code>params</code>.&nbsp;
+This function is called only when a new <code>fieldNodeGroup</code> is being popped or pasted over.</dd>
+
+<dt>groupCusomizer:&nbsp; <code>function(fieldNodeGroupFieldset, pasteOver, params)  { …your customizing code… }</code></dt>
+<dd>This is called when a new <code>fieldNodeGroup</code> is being popped, pasted,
+or when a <code>fieldNodeGroup</code> is deleted or was empty and has been dumped.&nbsp;
+It is called from a <code>setTimeout</code> function, so the <acronym>DOM</acronym> will be fully updated.&nbsp;
+Use it to do any final customizing.&nbsp;
+Note it is passed the <strong>whole</strong> <code>fieldNodeGroupFieldset</code> node containing all
+<code>fieldNodeGroup</code>s including the new one
+after it has been added to the document, not simply the newly cloned group.&nbsp;
+See <code>cloneCustomizer</code> (above) for info on <code>pasteOver</code> and <code>params</code>.</dd>
+
+<dt>doso:&nbsp; <code>true | 'insert' | 'paste'</code></dt>
+<dd><span class='notice'>========= this applies to popNewField() and pasteField() only =========</span>
+If you pass (Boolean)<code>true</code> when using popNewField(),
+a new <code>fieldNodeGroup</code> will be popped at the end of the <code>fieldNodeGroupFieldset</code>
+regardless of whether the last <code>fieldNodeGroup</code> is empty;&nbsp;
+but not exceeding <code>maxTotal</code>.&nbsp;
+Empty <code>fieldNodeGroup</code>s may be removed as usual.&nbsp;
+Empty <code>fieldNodeGroup</code>s will <strong><em>not</em></strong> be
+automatically removed if <code>"insert"</code> when using popNewField().&nbsp;
+If you pass <code>"insert"</code> or <code>"paste"</code> when using popNewField(),
+a new field will be popped and inserted
+<strong><em>before</em></strong> the passed <code>fieldNodeGroup</code>,
+regardless of whether the last field is empty; but not exceeding <code>maxTotal</code>.<br />
+With <code>popNewField()</code>, “insert” inserts an empty fieldNodeGroup.<br />
+With <code>pasteField()</code>, “insert” inserts the selected clip.<br />
+With <code>popNewField()</code>, “paste” inserts the selected clip.</dd>
+
+
+<dt>addTo:&nbsp; <code>true</code></dt>
+<dd><span class='notice'>========= this applies to popNewField() only =========</span>
+If you pass <code>opts.addto=true</code>, then the value that would be passed into <code>popNewField()</code> as
+<code>fieldNodeGroup</code> will be instead considered the <code>fieldNodeGroupFieldset</code>.&nbsp;
+This will allow you to add a new <code>fieldNodeGroup</code> to an empty <code>fieldNodeGroupFieldset</code>
+but only if •the <code>Genie.clone</code> is set; •or <code>opts.doso='paste'</code> while the clipboard has contents.&nbsp;
+Passing <code>opts.addto=true</code> acts similar as passing <code>opts.doso=true</code> in that it will always pop a new field
+(unless as noted above the <code>fieldNodeGroupFieldset</code> is empty and there is no clone and no paste).&nbsp;
+Note that <code>pasteField()</code> with <code>opts.doso='insert'</code> internally calls calls <code>popNewField()</code>,
+and this option may then take effect.</dd>
+
+<dt>clip:&nbsp; <code><var>Object-member-identifier</var> === ( instanceof Number || String.match( /^[_a-z][_a-z0-9]*$/i ) )</code>
+<dd>( a.k.a. %%your-clip-reference%% )<br />
+This is a reference to the member of the clipboard object associated with an instance of the FormFieldGenie.&nbsp;
+Each FormFieldGenie instance has its own clipboard, and each clipboard can hold an “unlimited” number of clips
+(limited by the machine).&nbsp;
+You may copy, cut and paste into/from any clip.</dd>
+
+<dt>groupClass:&nbsp; <var>string</var> or <var>RegExp</var></dt>
+<dd>If you supply a <code>groupClass</code> then the Genie will only consider childnodes of the
+<code>fieldNodeGroupFieldset</code> that have a matching <abbr title='cascading style sheet'>CSS</abbr> class
+to be <code>fieldNodeGroup</code>s.&nbsp;</dd>
+
+<dt>groupTag:&nbsp; <var>string</var></dt>
+<dd>If you supply a <code>groupTag</code> then the Genie will only consider childnodes of the
+<code>fieldNodeGroupFieldset</code> that are matching <abbr title='document-object model'>DOM</abbr> nodes
+to be <code>fieldNodeGroup</code>s.&nbsp;</dd>
+</dl>
+
+<p>Most of these options do not need much explanation, especially if you study the demonstration example.&nbsp;
+A few do, so we will touch on them here.</p>
+
+<p>By using the <code>groupClass</code> and/or <code>groupTag</code>, you may include other tags in your
+<code>fieldNodeGroupFieldset</code>, including form-inputs or tags with form-inputs as children,
+that are not to be duplicated, automatically cleared, or otherwise messed-with by the Genie.&nbsp;
+
+
+</p>
+
+<p>When you want to use a plugin function to update names, you may write one that accepts
+a set of parameters, and then pass different parameters to your plugin for different form fields.&nbsp;
+There is an included plugin with the demonstration example and the downloadable source code that
+shows how this works.&nbsp;
+The supplied standard demo plugin can accept two different parameters (passed in the one object).&nbsp;
+You may create your own “order” and pass it through to this plugin, should you choose.&nbsp;
+If you understand Perl compatible regular expressions, and can understand how this simple plugin functions,
+then you could also pass a custom RegExp to the plugin and have even greater control over how it updates the name.&nbsp;
+We chose using the first index, because this works well with this plugin’s logic.&nbsp;
+Pay attention to the fact that the logic requires matching a <strong>single</strong> character,
+then the “incremental word” follows.&nbsp; Another example of a naming style that would work
+with this function’s logic is <code>name_first</code>&nbsp; <code>name_second</code>
+using the RegExp <code>/_([a-z]+)$/</code> or <code>name_first[]</code>&nbsp; using <code>/_([a-z]+)\[/</code></p>
+
+</div>
+<footer>
+<p>All content found on this page &amp; site Copyright © 2010, 2012, 2013, 2015 by SoftMoon WebWare and its owner,
+all rights reserved, unless otherwise specifically noted.&nbsp;
+Trademarks and Service-Marks are property of SoftMoon WebWare and its owner,
+all rights reserved, unless otherwise specifically noted.<br />
+
+<span class='notice'>“JavaScript<mark class='macronym'>™</mark>” is a trademark of Sun Microsystems.</span>
+</footer>
+</body>
+</html>
