@@ -30,9 +30,6 @@ body {
 	font-weight: bold;
 	font-family: "Cooper Black", serif;
 	padding: .618em 0 0 1em; }
-#top h1 span {
-	padding: 0 0 0 2.618em;
-	font-size: .764em }  /* ≈ Φ + ((1-Φ) - (1-Φ)*Φ) */
 #top h1:last-child {
 	position: absolute;
 	bottom: 17px;
@@ -58,36 +55,6 @@ body {
 #top figcaption span em {
 	text-transform: uppercase;
 	font-weight: bold }
-#top menu {
-	position: absolute;
-	bottom: 13em;
-	right: 7px;
-	z-index: 618;
-	color: #000000;
-	font-size: 1.382em;
-	list-style-type: none;
-	overflow: visible; }
-#top menu#sub_nav {
-	position: relative;
-	top: 0;
-	right: 0;
-	font-size: 100%;
-	margin-left: 1.618em; }
-#top menu a {
-	display: block;
-	padding: 0 2px 1px 2px;
-	color: #000080; }
-#top menu a:visited {
-	color: #000080; }
-#top menu a:hover {
-	color: #FFFF00;
-	background-color: #000080;
-	text-decoration: none; }
-#top li.current {
-	font-weight: bold;
-	font-style: oblique;
-	position: relative;
-	right: 3.618em; }
 #content {
 	min-width: 57em;
 	width: 100%;  /* fix MSIE crash 'n' trash  (yet another "hasLayout" bug?) */
@@ -187,7 +154,7 @@ abbr.macronym {
 	border-bottom: none; }
 mark {
 	background-color: inherit; }
-code, var {
+code, var, kbd {
 	font-family: monospace; }
 kbd span {
 	display: inline-block;
@@ -214,22 +181,6 @@ kbd span {
 <figcaption>JavaScript<mark class='macronym'>™</mark>, <abbr>HTML 5</abbr>, <abbr>CSS 4</abbr>, &amp; <abbr>PHP 8</abbr>:
 <span>Innovative Enterprise level Scripting for interactive sites, <acronym title='software as a service'>SaaS</acronym>, &amp; cross-platform desktop apps</span></figcaption>
 </figure>
-<menu id='main_nav'>
-<li><a href="index.htm">Home</a></li>
-<li><a href="dealer-websites/" target='dealer'
- title="Best Auto Dealer Websites">Automotive Dealer Website Development</a></li>
-<li><a href="OpenSource.php">Free software: <abbr>PHP</abbr> and JavaScript<mark class='macronym'>™</mark></a><menu id='sub_nav'>
-	<li><a href="Rainbow-Maker_instructions.htm"><abbr>PHP</abbr> Rainbow-Maker<mark class='macronym'>™</mark></a></li>
-	<li><a href="MasterColorPicker_instructions.php">MasterColorPicker<mark class='macronym'>™</mark></a></li>
-	<li><a href="UniDOM_instructions.htm">UniDOM.js<mark class='macronym'>™</mark> x-browser solution +</a></li>
-	<li><a href="input-type=picker_instructions.htm"><code>&lt;input type="picker"&gt;</code></a></li>
-	<li class='current'><a href="#content">FormFieldGenie<mark class='macronym'>™</mark> fieldset multiplier</a></li>
-	<li><a href="checkEmail-js_instructions.htm">Form Input eMail Validation Script</a></li>
-	<li><a href="validateEmailList-php_instructions.htm"><abbr>PHP</abbr> eMail Validation Script</a></li>
-	<li><a href="PHP-functions_instructions.php"><abbr>PHP</abbr> Utility Functions</a></li>
-</menu></li>
-<li><a href="developer_resources.htm">Web Developer Resources</a></li>
-</menu>
 <h1>FormFieldGenie-4 Text-Input Auto-Pop-Up</h1>
 </header>
 <main id='content'>
