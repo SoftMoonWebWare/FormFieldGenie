@@ -58,6 +58,36 @@ body {
 #top figcaption span em {
 	text-transform: uppercase;
 	font-weight: bold }
+#top menu {
+	position: absolute;
+	bottom: 13em;
+	right: 7px;
+	z-index: 618;
+	color: #000000;
+	font-size: 1.382em;
+	list-style-type: none;
+	overflow: visible; }
+#top menu#sub_nav {
+	position: relative;
+	top: 0;
+	right: 0;
+	font-size: 100%;
+	margin-left: 1.618em; }
+#top menu a {
+	display: block;
+	padding: 0 2px 1px 2px;
+	color: #000080; }
+#top menu a:visited {
+	color: #000080; }
+#top menu a:hover {
+	color: #FFFF00;
+	background-color: #000080;
+	text-decoration: none; }
+#top li.current {
+	font-weight: bold;
+	font-style: oblique;
+	position: relative;
+	right: 3.618em; }
 #content {
 	min-width: 57em;
 	width: 100%;  /* fix MSIE crash 'n' trash  (yet another "hasLayout" bug?) */
@@ -114,7 +144,9 @@ body {
 	font-family: monospace; }
 #content dt code { /*CornflowerBlue, 38% opacity;*/
 	background-color: RGBA(100, 149, 237, 38%); }
+#content p note,
 #content dd em {
+	font-style: oblique;
 	color: maroon;
 	display: block; }
 #content dd strong em {
@@ -182,6 +214,22 @@ kbd span {
 <figcaption>JavaScript<mark class='macronym'>™</mark>, <abbr>HTML 5</abbr>, <abbr>CSS 4</abbr>, &amp; <abbr>PHP 8</abbr>:
 <span>Innovative Enterprise level Scripting for interactive sites, <acronym title='software as a service'>SaaS</acronym>, &amp; cross-platform desktop apps</span></figcaption>
 </figure>
+<menu id='main_nav'>
+<li><a href="index.htm">Home</a></li>
+<li><a href="dealer-websites/" target='dealer'
+ title="Best Auto Dealer Websites">Automotive Dealer Website Development</a></li>
+<li><a href="OpenSource.php">Free software: <abbr>PHP</abbr> and JavaScript<mark class='macronym'>™</mark></a><menu id='sub_nav'>
+	<li><a href="Rainbow-Maker_instructions.htm"><abbr>PHP</abbr> Rainbow-Maker<mark class='macronym'>™</mark></a></li>
+	<li><a href="MasterColorPicker_instructions.php">MasterColorPicker<mark class='macronym'>™</mark></a></li>
+	<li><a href="UniDOM_instructions.htm">UniDOM.js<mark class='macronym'>™</mark> x-browser solution +</a></li>
+	<li><a href="input-type=picker_instructions.htm"><code>&lt;input type="picker"&gt;</code></a></li>
+	<li class='current'><a href="#content">FormFieldGenie<mark class='macronym'>™</mark> fieldset multiplier</a></li>
+	<li><a href="checkEmail-js_instructions.htm">Form Input eMail Validation Script</a></li>
+	<li><a href="validateEmailList-php_instructions.htm"><abbr>PHP</abbr> eMail Validation Script</a></li>
+	<li><a href="PHP-functions_instructions.php"><abbr>PHP</abbr> Utility Functions</a></li>
+</menu></li>
+<li><a href="developer_resources.htm">Web Developer Resources</a></li>
+</menu>
 <h1>FormFieldGenie-4 Text-Input Auto-Pop-Up</h1>
 </header>
 <main id='content'>
@@ -219,7 +267,7 @@ to understand what is happening, why and how.&nbsp;
 You can download the JavaScript<mark class='macronym'>™</mark> package from our ►<a href='OpenSource.php'>download page</a>
 or Git it from GitHub: ►<a href='https://github.com/SoftMoonWebWare/FormFieldGenie' target='github'>FormFieldGenie</a>.</p>
 
-<p>Using this class is simple and strait-forward, requiring only a few
+<p>Using this class is simple and straight-forward, requiring only a few
 JavaScript<mark class='macronym'>™</mark> event handlers be added to the form field(s)
 you want duplicated (cloned).&nbsp;
 But it is no simple class: not only can it clone the form field
@@ -269,7 +317,17 @@ Remember, in an event handler for form fields, the keyword <code>this</code> ref
 If the field has a <code>&lt;label&gt;</code> tag (or any other tag) around it that you want cloned also,
 simply pass <code>this.parentNode</code>.&nbsp;
 If you want to clone a whole group of fields and associated text,
-simply repeat <code>parentNode</code> in a chain as many times as needed to move up the <acronym>DOM</acronym> tree.&nbsp;</p>
+simply repeat <code>parentNode</code> in a chain as many times as needed to move up the <acronym>DOM</acronym> tree.&nbsp;
+<note><strong>Note</strong> that the FormFieldGenie started out as a single simple function
+back in the days of dinosaur browsers,
+when <code>focusIn</code> &amp; <code>focusOut</code> events (which do bubble) were not standard.&nbsp;
+You had to use <code>focus</code> &amp; <code>blur</code> events (which do not bubble)
+directly on the <code>&lt;input&gt;</code> ‖ <code>&lt;textarea&gt;</code> Elements,
+requiring an event-handler for each that needs to keep track of <code>parentNode</code>s and their “anscestors.”&nbsp;
+The demo (test!) example was developed then.&nbsp;
+These days you can put the event-handlers on <code>parentNode</code>s and their “ancestors”
+(as in the short simple example shown below),
+greatly simplyfying the application of this class to your <abbr>HTML</abbr>.</note></p>
 
 <p>From there, the class makes one requirement:
 there must be a tag enclosing the <code>fieldNodeGroup</code> (see below) you want cloned.&nbsp;
@@ -300,11 +358,18 @@ when the <code>fieldNodeGroup</code> is cloned and the clone is added to the <co
 This updated number will be kept in proper sequence (without gaps) with the order of <code>&lt;input&gt;</code>s in the <abbr>HTML</abbr>,
 which is generally and accordingly the sequence shown to the end-user.&nbsp;
 (Alternatively, with <abbr>PHP</abbr> at least, the name could simply be <code>user[pets][]</code>
-and the FormFieldGenie will do nothing to it, because it doesn’t need to! …more on that below)</p>
+and the FormFieldGenie will do nothing to it, because it doesn’t need to! …more on that below…)&nbsp;
+<note>Also <strong>note</strong> that the event-handlers could be moved to the <code>&lt;label&gt;</code>
+and we could then use the keyword <code>this</code> instead of <code>event.target.parentNode</code>&nbsp;
+If we keep them on the <code>&lt;fieldset&gt;</code> they could be attached using <code>addEventListener()</code>
+instead of using inline-attributes, as they will not need to be cloned;
+the <code>&lt;label&gt;</code> gets cloned, so it is easier to use inline-attributes there
+since they get cloned with the Element, whereas “attached EventListeners” do not get cloned.</note></p>
 
 <code>
 &lt;fieldset
  onfocusin='myGenie.tabbedOut=false'
+ onkeydown='myGenie.catchTab(event)'
  onfocusout='myGenie.popNewField(event.target.parentNode)'&gt;
   &lt;label&gt;pet name&lt;input type='text' name='user[pets][1]'&gt;&lt;/label&gt;
 &lt;/fieldset&gt;
@@ -605,7 +670,7 @@ of a <topic>FormFieldGenie.ConfigStack</topic> (myGenie.config) instance are:</h
 		using the standard <code>dumpEmpties()</code> function (see directly above).</dd>
 
 	<dt>nodeName: <default>null</default></dt>
-		<dd>Specific nodeName of Elements that are considered “fieldNodeGroups” when checking to dump empties
+		<dd>Specific nodeName of <code>fieldNode</code> Elements to check for being “empty” when checking to dump empties
 		using the standard <code>dumpEmpties()</code> function (see directly above).&nbsp;
 		Remember, in JavaScript<mark class='macronym'>™</mark> node names are in all UPPERCASE.</dd>
 
