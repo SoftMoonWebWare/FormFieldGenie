@@ -1,143 +1,149 @@
 <!DOCTYPE html>
-<html>
+<html lang="en-US">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="UTF-8">
 <meta name='description' content='A JavaScript tool for multiplying form inputs'>
 <meta name='author' content='Joe Golembieski, SoftMoon-WebWare'>
-<meta name='copyright' content='Copyright © 2010, 2012, 2013, 2015, 2022 Joe Golembieski, SoftMoon-WebWare'>
-<title>FormFieldGenie instructions from SoftMoon WebWare</title>
+<meta name='copyright' content='Copyright © 2010, 2012, 2013, 2015, 2022, 2023 Joe Golembieski, SoftMoon-WebWare'>
+<title>FormFieldGenie instructions from SoftMoon-WebWare</title>
+<link rel="icon" type="image/x-icon" href="images/SoftMoonWebWare.gif">
 <style type="text/css">
-body, header, div, h1, h2, h4, img, ul, li, menu, a {
+body, header, main, section, footer, figure, div, h1, h2, h4, h5, img, ul, ol, dl, menu, li {
 	margin: 0;
 	padding: 0; }
 body {
-	min-width: 800px;
-	font-family: Times, "Times New Roman", serif;
+	min-width: 57em;
+	font-family: serif;
 	color: #000000;
-	background: #FFDEAD url(images/SoftMoon.repeat-y.png) repeat-y; }
-#top {
-	position: relative;
-	height: 700px;
-	min-height: 42em;
-	background: #FFDEAD url(images/SoftMoon.repeat-x.png) repeat-x; }
-#top, #content, footer {
-	min-width: 62em;
-	opacity: .62;
-	-moz-opacity: .62;
-	filter: alpha(opacity=62); }
-#top h1:first-child {
+	background-color: #FFDEAD;
+	background-image:  /* SteelBlue */
+		linear-gradient(to right, #4682B4FF, 304px, #4682B400 800px),
+		linear-gradient(to bottom, #4682B4FF, 266px, #4682B400 700px),
+		linear-gradient(to top, #4682B4FF, 38px, #4682B400 100px);
+	}
+
+header h1 {
 	font-size: 1.618em;
 	font-weight: bold;
-	font-family: "Cooper Black", serif;
-	padding: .618em 0 0 1em; }
-#top h1:last-child {
-	position: absolute;
-	bottom: 17px;
-	left: 0px;
-	text-align: center;
-	width: 100%; }
-#top figure {
-	position: absolute;
-	top: 2.618em;
-	left: 1em; }
+	clear: both;
+	text-align: center;  }
+header h1:first-child {
+	font-family: sans-serif;
+	padding: .618em 1em 0 1em;
+	text-align: left; }
+header h1 span {
+	padding: 0 0 0 2.618em;
+	font-size: .764em }  /* ≈ Φ + ((1-Φ) - (1-Φ)*Φ) */
+
+header figure {
+	margin-left: .382rem;
+	float: left; }
 #logo {
+	opacity: .78;
 	font-size: 1.618em; /*for alt text*/
 	font-weight: bold;
 	line-height: 150%; }
-#top figcaption {
+header figcaption {
 	font-size: 1.382em;
 	font-weight: bold;
 	text-align: center;
 	width: 27em; }
-#top figcaption span {
+header h1 span,
+header figcaption span {
 	display: block;
 	font-style: oblique; }
-#top figcaption span em {
-	text-transform: uppercase;
-	font-weight: bold }
-#content {
-	min-width: 57em;
-	width: 100%;  /* fix MSIE crash 'n' trash  (yet another "hasLayout" bug?) */
-	background: #FFDEAD;
+
+main {
 	text-align: center; }
-#content h2 {
+main h2 {
 	margin-top: 2em; }
-#content h3 {
+main h3 {
 	margin: 0; }
-#content p {
+main p {
 	text-align: justify;
 	text-indent: -.618em;
 	font-size: 1.236em;
 	width: 27em;
 	margin: 0 auto 0 auto;
 	padding: 0 1em 1em 1em; }
-#content p * {
+main p * {
 	text-indent: 0; }
-#content p:first-letter {
+main p:first-letter {
 	font-size: 1.618em;
 	font-weight: bold;
 	color: #000040; }
-#content topic {
+main topic {
 	font-weight: bold;
 	color: black;
 	background-color: Chartreuse; }
-#content p code {
+main p code {
   white-space: nowrap; }
-#content > code {
+main > code {
 	white-space: pre; }
-#content > code,
-#content ul,
-#content dl {
+main > code,
+main ul,
+main dl {
 	margin: 0 auto 2em auto;
 	font-size: 1.236em;
 	display: block;
 	text-align: left;
 	list-style: none;
 	max-width: 47em; }
-#content li { margin-top: .618em; }
-#content ul.bulletted {
+main dl ul,
+main dl dl {
+	margin: 0 auto;
+	font-size: inherit;
+	max-width: 40em; }
+main li { margin-top: .618em; }
+main ul.bulletted {
 	list-style: circle; }
-#content ul.bulletted li code {
+main ul.bulletted li code {
 	display: inline;
 	white-space: pre; }
-#content default {
+main default {
 	color: black;
 	background-color: Orange;
 	border-radius: .382em; }
-#content dt {
+main dt {
 	margin-top: 1em;
 	font-weight: bold;
 	font-size: 116.2%;
 	font-family: monospace; }
-#content dt code { /*CornflowerBlue, 38% opacity;*/
+main dl dl dt {
+	margin: 0; }
+main dt code { /*CornflowerBlue, 38% opacity;*/
 	background-color: RGBA(100, 149, 237, 38%); }
-#content p note,
-#content dd em {
+main p note,
+main dd em {
 	font-style: oblique;
 	color: maroon;
 	display: block; }
-#content dd strong em {
+main dd strong em {
 	display: inline; }
-#content > .notice {
+main > .notice {
 	font-size: 1.236em; }
-#content > ul + .notice {
+main > ul + .notice {
 	margin: -1.618em auto 1em auto; }
-#content .notice {
+main .notice {
 	display: block;
 	color: #800000; }
-footer {
-	position: relative;
-	height: 100px;
-	background: #FFDEAD url(images/SoftMoon.footer.back.png) repeat-x bottom; }
+desc,
+rule {
+	display: block; }
+rule {
+	margin-left: 1em;
+	text-indent: -.382em; }
+
+
 footer p {
-	position: absolute;
-	left: 1.618em;
-	bottom: .618em;
+	margin: 0 1.618em;
 	font-size: .78em;
 	font-weight: bold; }
-footer .notice {
-	white-space: nowrap;
-	margin-right: 7.618em; }
+footer note {
+	margin-right: 2.618em; }
+footer note:last-child {
+	margin-right: 0; }
+
 dd mark,
 .numerance {
 	font-size: .618em;
@@ -154,7 +160,7 @@ abbr.macronym {
 	border-bottom: none; }
 mark {
 	background-color: inherit; }
-code, var, kbd {
+code, var {
 	font-family: monospace; }
 kbd span {
 	display: inline-block;
@@ -174,15 +180,17 @@ kbd span {
 </style>
 </head>
 <body>
-<header id='top'>
+<header>
 <h1>Custom Web Software Development</h1>
 <figure>
-<img id='logo' src="images/SoftMoon.gif" alt="SoftMoon WebWare">
+<img id='logo' src="images/SoftMoon-WebWare.gif" alt="SoftMoon-WebWare">
 <figcaption>JavaScript<mark class='macronym'>™</mark>, <abbr>HTML 5</abbr>, <abbr>CSS 4</abbr>, &amp; <abbr>PHP 8</abbr>:
 <span>Innovative Enterprise level Scripting for interactive sites, <acronym title='software as a service'>SaaS</acronym>, &amp; cross-platform desktop apps</span></figcaption>
 </figure>
+
 <h1>FormFieldGenie-4 Text-Input Auto-Pop-Up</h1>
 </header>
+
 <main id='content'>
 <p>This JavaScript<mark class='macronym'>™</mark> powered multifunctional class allows you to create an
 end-user-manipulatable <abbr>HTML</abbr> form
@@ -194,7 +202,7 @@ sections of an <abbr>HTML</abbr> form to/from multi-clip clipboards.&nbsp;
 We use this class in our
 ►<a href="https://softmoon-webware.com/MasterColorPicker_instructions.php">MasterColorPicker</a> package,
 and you can see useful working integrated examples there
-(in the “MyPalette” sub-application, and the “Color Filter” extension).</p>
+(in the “MyPalette” and “Gradientor” sub-applications, and the “Color Filter” extension).</p>
 
 <p><em>¿What</em> do you use this for?&nbsp; When you have to ask someone to list each of something
 you request, and they may need one (1) form field, or they may need fifty (50), or anywhere in between or even more!&nbsp;
@@ -481,9 +489,9 @@ and/or Event-handlers attached to the body to do the same thing if clicked elsew
 	<dt>.config</dt>
 		<dd>An instance of a <a href='#config_stack'>FormFieldGenie.ConfigStack</a>.&nbsp;
 		This holds all the configuration values for a FormFieldGenie instance.&nbsp;
-		You can <code>myGenie.config.push()</code> a new set of values (of your choice) onto the stack to temporarily change them,
-		then <code>myGenie.config.pop()</code> off those modifications to restore the configuration to the previous values.&nbsp;
-		Any time you pass an <var>opts</var> (options) object to any method, those options are temporarily pushed
+		You can <code>myGenie.config.stack()</code> a new set of values (of your choice) onto the stack to temporarily change them,
+		then <code>myGenie.config.cull()</code> off those modifications to restore the configuration to the previous values.&nbsp;
+		Any time you pass an <var>opts</var> (options) object to any method, those options are temporarily stacked
 		onto this stack while the method is operating.</dd>
 	<dt>.clipboard</dt>
 		<dd>This holds all the clipboard data for your Genie instance.</dd>
@@ -550,11 +558,6 @@ and/or Event-handlers attached to the body to do the same thing if clicked elsew
 of a <topic>FormFieldGenie.ConfigStack</topic> (myGenie.config) instance are:</h2>
 
 <dl>
-	<dt>maxTotal: <var>+number</var> <default>100</default></dt>
-		<dd>maximum number of clones (<code>fieldNodeGroups</code>) in the <code>fieldNodeGroupFieldset</code>.&nbsp;
-		There is no minTotal, as this would impose restrictions on how the <code>fieldNodeGroupFieldset</code> is structured.&nbsp;
-		To retain a minimum total, use a custom function for <code>dumpEmpties</code> (see below) which can make this distinction.</dd>
-
 	<dt>indxTier: <var>0 +number</var> <default>0</default></dt>
 		<dd>Number of index “tiers” to ignore at the end of a name; used to skip over tier(s) when updating names.&nbsp;
 		<code>climbTiers</code> must be true (see directly below).&nbsp;
@@ -607,37 +610,75 @@ of a <topic>FormFieldGenie.ConfigStack</topic> (myGenie.config) instance are:</h
 	function(empty_fieldNodeGroupInQuestion, deleteFlag) { /*…your custom code makes the distinction…*/ }</code></dt>
 		<dd>Remove emptied fieldNodeGroups on the fly?
 		<em>This applies to <code>deleteField()</code> and <code>popNewField()</code> only, and not when inserting or pasting.</em>
-		The supplied default function utilizes the <code>minFields</code> value (see directly below) to make the distinction.&nbsp;
+		The supplied default function utilizes the <code>minFields</code>, <code>groupTag</code>, &amp; <code>groupClass</code>
+		ConfigStack values (see below) to make the distinction.&nbsp;
 		If a function is supplied, it should return <code>true ‖ false ‖ null</code>
 		and if <code>null</code> is returned, the function should remove the field itself.&nbsp;
 		If you use <code>deleteField()</code>, the <code>fieldNodeGroup</code> will be removed
 		even if <code>dumpEmpties===false</code>;&nbsp;
-		however, if <code>dumpEmpties</code> is a function, it will be called with the value of <code>deleteFlag=true</code>
+		however, if <code>dumpEmpties</code> is a function, it will be called with the value of
+		<code>deleteFlag=true</code> as its second parameter
 		and its return value (<code>true‖false</code>) will be respected.
 		</dd>
 
-	<dt>minFields: <var>+number</var> <default>1</default></dt>
+	<dt>minGroups: <var>+number</var> <default>1</default></dt>
 		<dd>Min number of “fieldNodeGroups” when checking to dump empties
 		using the standard <code>dumpEmpties()</code> function (see directly above).</dd>
 
-	<dt>nodeName: <default>null</default></dt>
+	<dt>maxGroups: <var>+number</var> <default>100</default></dt>
+		<dd>Maximum number of clones (<code>fieldNodeGroups</code>) in the <code>fieldNodeGroupFieldset</code>.</dd>
+
+	<dt>groupClass: <var>string ‖ RegExp</var> <default>""</default></dt>
+		<dd>This is used to identify <strong>specific</strong> Elements in a <code>fieldNodeGroupFieldset</code> that are <code>fieldNodeGroup</code>s.&nbsp;
+		If it is undefined, all children of the <code>fieldNodeGroupFieldset</code> are <code>fieldNodeGroup</code>s if they match the <code>ConfigStack.groupTag</code>.</dd>
+
+	<dt>groupTag: <code>htmlTagNameString.toUpperCase() ‖ <default>null</default></code></dt>
+		<dd>This is used to identify <strong>specific</strong> Elements in a <code>fieldNodeGroupFieldset</code> that are <code>fieldNodeGroup</code>s.&nbsp;
+		If it is undefined, all children of the <code>fieldNodeGroupFieldset</code> are <code>fieldNodeGroup</code>s if they match the <code>ConfigStack.groupClass</code>.</dd>
+
+	<!--  dt>nodeName: <default>null</default></dt>
 		<dd>Specific nodeName of <code>fieldNode</code> Elements to check for being “empty” when checking to dump empties
 		using the standard <code>dumpEmpties()</code> function (see directly above).&nbsp;
-		Remember, in JavaScript<mark class='macronym'>™</mark> node names are in all UPPERCASE.</dd>
+		Remember, in JavaScript<mark class='macronym'>™</mark> node names are in all UPPERCASE.</dd  -->
 
-	<dt>checkForEmpty: <code>"all" ‖ "some" ‖ <default>"one"</default></code></dt>
+	<dt>checkForFilled: <code>"all" ‖ "some" ‖ "any" ‖ <default>"one"</default></code></dt>
 		<dd><em>This applies to <code>deleteField()</code> and <code>popNewField()</code> only, and <strong>not</strong> when inserting or pasting.</em>
-		If set, the corresponding input-fields in the <code>fieldNodeGroup</code> will be checked.&nbsp;
+		If set, the corresponding specified input-fields in the <code>fieldNodeGroup</code> will be checked.&nbsp;
 		By default only the <strong><em>first</em></strong> one is checked.&nbsp;
-		If <code>one</code> or <code>some</code>, the <code>checkField</code> option (see below) should be used also.&nbsp;
-		If <code>some</code>, each of the <strong><em>first</em></strong> <code>checkField</code> number of fields will be checked.</dd>
+		If <code>one</code> or <code>some</code> or possibly <code>any</code>, the <code>checkField</code> option (see below) should be used also.
+		<dl>
+				<dt>'one'</dt>
+				<dd><desc>the “specified field” is indexed by <code>checkField</code></desc>
+					<rule>if the one specified field is full, a new group is popped.</rule>
+					<rule>if the one specified field is empty, the group may be dumped (automatically deleted).</rule></dd>
+				<dt>'any'</dt>
+				<dd><desc>the “specified fields” are either all of the fields in the group,
+					or if <code>checkField</code> is an array, it should contain the numeric indices of the fields</desc>
+					<rule>if any one of the specified fields is full, a new group is popped.</rule>
+					<rule>if all of the specified fields are empty, the group may be dumped (automatically deleted).</rule></dd>
+				<dt>'some'</dt>
+				<dd><desc>each of the -first- "checkField" number of fields specified will be checked,
+					or if <code>checkfield</code> is an array, it should contain the numeric indices of the fields</desc>
+					<rule>if all of the specified fields are full, a new group is popped.</rule>
+					<rule>if all of the specified fields are empty, the group may be dumped (automatically deleted).</rule></dd>
+				<dt>'all'</dt>
+				<dd><rule>if all of the fields in the group are full, a new group is popped.</rule>
+					<rule>if all of the fields in the group are empty, the group may be dumped (automatically deleted).</rule></dd>
+		</dl></dd>
 
-	<dt>checkField: <var>0 +number</var> <default>0</default></dt>
+	<dt>checkField: <var>0, +number</var> ‖ <var>Array</var> <default>0</default></dt>
 		<dd><em>This applies to <code>deleteField()</code> and <code>popNewField()</code> only, and <strong>not</strong> when inserting or pasting.</em>
-		Used in conjunction with <code>checkForEmpty</code> (see above).&nbsp;
-		Pass the field number (counted from <strong><em>zero</em></strong>)
-		of the field or fields you want checked for being “empty” when popping.&nbsp;
-		If <code>checkForEmpty='some'</code> then each of the first <var>number</var> of fields will be checked.</dd>
+		Used in conjunction with <code>checkForFilled</code> (see above).
+		<ul>
+			<li><desc>if checkField is a number (when <code>checkForFilled</code> = 'one' ‖ 'some')</desc>
+				<rule>Pass the field number (counted from <strong><em>zero</em></strong>)
+				of the field or fields you want checked for being “empty” when popping.&nbsp;
+				If <code>checkForEmpty='some'</code> then each of the first <var>number</var> of fields will be checked.</rule></li>
+			<li><desc>if checkField is an Array (when <code>checkForFilled</code> = 'any' ‖ 'some')</desc>
+				<rule>The array should contain numeric values that are the indices of the fields to check.&nbsp;
+				The fields are indexed (starting with <strong><em>0</em></strong>) in the order that they appear in the <abbr>HTML</abbr> document.</rule></li>
+		</ul>
+		</dd>
 
 	<dt>cbParams:<var>variable</var> <default>undefined</default></dt>
 		<dd>This is a user-defined object/value of any type.&nbsp;
@@ -690,16 +731,10 @@ of a <topic>FormFieldGenie.ConfigStack</topic> (myGenie.config) instance are:</h
 		including the new one after it has been added to the document, not simply the newly cloned group.&nbsp;
 		See <code>cloneCustomizer</code> (above) for info on <code>pasteOver</code> and <code>params</code>.</dd>
 
-	<dt>groupClass: <var>string ‖ RegExp</var> <default>""</default></dt>
-		<dd>This is used to identify <strong>specific</strong> Elements in a <code>fieldNodeGroupFieldset</code> that are <code>fieldNodeGroup</code>s.</dd>
-
-	<dt>groupTag: <code>htmlTagNameString.toUpperCase() ‖ <default>null</default></code></dt>
-		<dd>This is used to identify <strong>specific</strong> Elements in a <code>fieldNodeGroupFieldset</code> that are <code>fieldNodeGroup</code>s.</dd>
-
-	<dt>minPixWidth: <var>0 +number</var> <default>4</default></dt>
+	<dt>minPixWidth: <var>0, +number</var> <default>4</default></dt>
 		<dd>for an input to be "active"</dd>
 
-	<dt>minPixHeight: <var>0 +number</var> <default>4</default></dt>
+	<dt>minPixHeight: <var>0, +number</var> <default>4</default></dt>
 		<dd>for an input to be "active"</dd>
 
 	<dt>clone: <var>HTMLElement</var> <default>null</default></dt>
@@ -752,14 +787,14 @@ those “methodical” properties are noted below:</p>
 		If you pass (Boolean) <code>true</code> when using popNewField(),
 		a new <code>fieldNodeGroup</code> will be popped at the end of the <code>fieldNodeGroupFieldset</code>
 		regardless of whether the last <code>fieldNodeGroup</code> is empty;&nbsp;
-		but not exceeding <code>maxTotal</code>.&nbsp;
+		but not exceeding <code>maxGroups</code>.&nbsp;
 		Empty <code>fieldNodeGroup</code>s may be removed as usual.&nbsp;
 		Empty <code>fieldNodeGroup</code>s will <strong><em>not</em></strong> be
 		automatically removed if <code>"insert"</code> when using popNewField().&nbsp;
 		If you pass <code>"insert"</code> or <code>"paste"</code> when using popNewField(),
 		a new field will be popped and inserted
 		<strong><em>before</em></strong> the passed <code>fieldNodeGroup</code>,
-		regardless of whether the last field is empty; but not exceeding <code>maxTotal</code>.<br>
+		regardless of whether the last field is empty; but not exceeding <code>maxGroups</code>.<br>
 		With <code>popNewField()</code>, “insert” inserts an empty fieldNodeGroup.<br>
 		With <code>pasteField()</code>, “insert” inserts the selected clip.<br>
 		With <code>popNewField()</code>, “paste” inserts the selected clip.</dd>
@@ -803,15 +838,23 @@ Pay attention to the fact that the logic requires matching a <strong>single</str
 then the “incremental word” follows.&nbsp; Another example of a naming style that would work
 with this function’s logic is <code>name_first</code>&nbsp; <code>name_second</code>
 using the RegExp <code>/_([a-z]+)$/</code> or <code>name_first[]</code>&nbsp; using <code>/_([a-z]+)\[/</code></p>
-
 </main>
+
 <footer>
-<p>All content found on this page &amp; site Copyright © 2010, 2012, 2013, 2015, 2022 by SoftMoon-WebWare and its owner,
+<p>SoftMoon-WebWare and its websites do not use or store “cookies” or other data on your computer/device
+(except for application demos that require your intent to do so, to store “settings” and the data you generate and desire to save).&nbsp;
+No personal data is transferred to any other entity
+(except with your intent as previously stated while using “demos”,
+and said data is only transferred to SoftMoon-WebWare.com and is <em>not</em> saved).&nbsp;
+You are not being tracked, quantified, or mined for data when visiting our sites.&nbsp;
+We hope you enjoy the advertisement-free experience that shuns the growing worldwide corporate-fascism movement.</p>
+<p>All content found on this page &amp; site Copyright © 2010, 2012, 2013, 2015, 2022  by SoftMoon-WebWare and its owner,
 all rights reserved, unless otherwise specifically noted.&nbsp;
 Trademarks and Service-Marks are property of SoftMoon-WebWare and its owner,
-all rights reserved, unless otherwise specifically noted.<br>
-
-<span class='notice'>“JavaScript<mark class='macronym'>™</mark>” is a trademark of Oracle Corporation in the United States.</span>
+all rights reserved, unless otherwise specifically noted.</p>
+<p>
+<note>“JavaScript” is a trademark of Oracle Corporation.</note>
+</p>
 </footer>
 </body>
 </html>
