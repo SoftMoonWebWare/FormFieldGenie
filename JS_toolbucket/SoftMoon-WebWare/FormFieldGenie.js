@@ -1,6 +1,6 @@
 //    encoding: UTF-8 UNIX   tabspacing: 2   word-wrap: none
 
-/* FormFieldGenie version 4.4 (January 20, 2023)
+/* FormFieldGenie version 4.4.1 (March 24, 2023)
  * written by and Copyright © 2010,2011,2012,2015,2019,2020,2022,2023 Joe Golembieski, Softmoon-Webware
 
 *=*=*= ¡REQUIRES A MODERN BROWSER!  No longer compatable with early versions of MSIE =*=*=*
@@ -25,7 +25,7 @@ if (typeof SoftMoon.WebWare !== 'object')  SoftMoon.WebWare=new Object;
 
 
 
-;(function FormFieldGenie_NS(){  // open a private namespace
+{  // open a private namespace
 
 
 
@@ -437,7 +437,7 @@ function dumpEmpties(elmnt)  {
 
 
 	// these are "private" variables "global" to this class
-	var thisGenie,
+	let thisGenie,
 			config,
 			groupClass,
 			batch;
@@ -884,7 +884,7 @@ FormFieldGenie.prototype.update_HTML_clipMenu=function()  {
 
 
 
-})()  //close and invoke the NameSpace wrapper for private members/functions
+}  //close the NameSpace wrapper for private members/functions
 
 
 
