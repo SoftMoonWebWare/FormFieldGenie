@@ -1,9 +1,11 @@
 //    encoding: UTF-8 UNIX   tabspacing: 2   word-wrap: none
 
-/* FormFieldGenie version 4.4.1 (March 24, 2023)
+/* FormFieldGenie version 4.7  (November 14, 2023)
  * written by and Copyright © 2010,2011,2012,2015,2019,2020,2022,2023 Joe Golembieski, Softmoon-Webware
+ *
+ * API changes from version 4.4 to version 4.5 to version 4.6 to version 4.8
 
-*=*=*= ¡REQUIRES A MODERN BROWSER!  No longer compatable with early versions of MSIE =*=*=*
+*=*=*= ¡REQUIRES A MODERN BROWSER!  No longer compatible with early versions of MSIE =*=*=*
 
 		This program is free software: you can redistribute it and/or modify
 		it under the terms of the GNU General Public License as published by
@@ -20,24 +22,37 @@
 		along with this program.  If not, see <http://www.gnu.org/licenses/>   */
 
 
-if (typeof SoftMoon !== 'object')  SoftMoon=new Object;
-if (typeof SoftMoon.WebWare !== 'object')  SoftMoon.WebWare=new Object;
+'use strict';
 
+
+/*   The SoftMoon “namespace” is usually a constant defined in a “pinnicle” file somewhere else
+const SoftMoon=Object.defineProperties({}, {WebWare: {value:{}, enumerable:true}});
+*/
 
 
 {  // open a private namespace
 
 
-
+//this is our global namespace reference
 SoftMoon.WebWare.FormFieldGenie=FormFieldGenie;
 
 
 // ======= class constructor =======
-function FormFieldGenie(opts, HTML_clipMenu)  {
+function FormFieldGenie(opts, HTML_clipMenu, name)  {
 	if (!new.target)  throw new Error("“FormFieldGenie” is a constructor, not a function or method.");
 	this.config=new FormFieldGenie.ConfigStack(this, opts);
 	this.clipboard=new Array;  //new Object; ← the Array acts like a simple Object
-	this.HTML_clipMenu=HTML_clipMenu;
+	if (HTML_clipMenu instanceof Element)  this.HTML_clipMenu=HTML_clipMenu;
+	else if (HTML_clipMenu!==undefined)  throw new Error('The FormFieldGenie “HTML_clipMenu” must be a DOM Element. passed in:',HTML_clipMenu)
+	Object.defineProperty(this, "name",
+		{get: ()=>name,
+		 set: n=>  {
+			if (typeof n !== 'string'
+			&&  n!==undefined)  throw new Error('FormFieldGenie names must be a string-type variable. typeof '+(typeof n)+' passed in: ',n)
+			if (/\n|\r|,/.test(n))  throw new Error('FormFieldGenie names may not contain the comma , character or line-ending \\n \\r characters.');
+			name=n?.trim();  },
+		 enumerable: true});
+	this.name=name;
 	this.tabbedOut=false;
 	this.catchTab=this.catchTab.bind(this);  }
 
@@ -48,24 +63,24 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 	• makes it easy to manage the names of consecutive form-field elements when adding or deleting.
 	• provides a multi-clip clipboard framework for cut/copy/paste operations of a form-field or group of form-fields.
 
-	When adding a new form-field or group of form-fields (using the popNewField() method),
+	When adding a new form-field or group of form-fields (using the popNewGroup() method),
 	the FormFieldGenie can create (clone) one based on what already exists in the form (more on that below),
 	or you can explicitly give it a form-field or group of form-fields to clone.
 	You may define an explicit DOM node (form-field or group of form-fields) to clone
 	when creating an instance of the FormFieldGenie; for example:
 		myGenie=new SoftMoon.WebWare.FormFieldGenie({clone:……my DOM node to clone……, ……more of my options……});
-		myGenie.popNewField(……)
+		myGenie.popNewGroup(……)
 	After creating an instance of the FormFieldGenie, you may also
 	set the instance.config.clone to the explicit DOM node (form-field or group of form-fields) you want to clone (if any).
 	An example of defining an explicit node to clone:
 		myGenie=new SoftMoon.WebWare.FormFieldGenie;
 		myGenie.config.clone= ……my DOM node to clone……
-		myGenie.popNewField(………)
+		myGenie.popNewGroup(………)
 	After creating an instance of the FormFieldGenie, you may also
 	pass-in as an option the explicit DOM node (form-field or group of form-fields) you want to clone (if any).
 	An example of passing an explicit node to clone:
 		myGenie=new SoftMoon.WebWare.FormFieldGenie;
-		myGenie.popNewField({clone:……my DOM node to clone……, ……more of my options……})
+		myGenie.popNewGroup({clone:……my DOM node to clone……, ……more of my options……})
 
 
 	The publicly accessible properties of a FormFieldGenie instance are:
@@ -75,28 +90,28 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 		.tabbedOut
 
 	The publicly accessible user-methods of a FormFieldGenie instance are:
-	popNewField(group, opts)     returns true if a new group is ‘popped’ or false if not.
+	popNewGroup(group, opts)     returns true if a new group is ‘popped’ or false if not.
 	deleteGroup(group, opts)     returns true if the group was deleted, false if not.
 		 cutGroup(group, opts)     returns true if the group was deleted, false if not.  group will always be copied to the clipboard.
 		copyGroup(group, opts)     returns null.  group will always be copied to the clipboard.
-	 pasteField(group, opts)     returns false if the clipboard clip is empty, true if it is pasted.
+	 pasteGroup(group, opts)     returns false if the clipboard clip is empty, true if it is pasted.
 	clearClipboard()
 	getClip(clipID, doInit)  this method is also called internally by other user-methods as a worker-method, but you may utilize it if manually working with the clipboard.
 	update_HTML_clipMenu()   this method is also called internally by other user-methods as a worker-method, but you may utilize it if manually updating the clipboard.
 
-	The publicly accessible (and user-replacable) worker-methods of a FormFieldGenie instance are:
+	The publicly accessible (and user-replaceable) worker-methods of a FormFieldGenie instance are:
 	isActiveField(fieldNode, cbParams)  ← this is called internally by user methods
 	catchTab(event)  ← this is to be utilized (called by) by your “onKeyDown” event handler
 	catchKey(event)  ← this is NOT defined natively, but is recognized and called by the standard “catchTab” method of an instance
 
 
 	Note you can paste _two_ different ways using _three_ different methods:
-		• paste over an existing group using   pasteField(group, {clip: %%your-clip-reference%%})
-		• insert a new group using   pasteField(group, {doso: 'insert', clip: %%your-clip-reference%%})
-		• insert a new group using   popNewField(group, {doso: 'paste', clip: %%your-clip-reference%%})
+		• paste over an existing group using   pasteGroup(group, {clip: %%your-clip-reference%%})
+		• insert a new group using   pasteGroup(group, {doso: 'insert', clip: %%your-clip-reference%%})
+		• insert a new group using   popNewGroup(group, {doso: 'paste', clip: %%your-clip-reference%%})
 	( see “clip” in “opts” below for more info on %%your-clip-reference%% )
-	The difference between popNewField and pasteField is that pasteField will return false if the clip is empty,
-	while popNewField will simply pop a new “blank” clone if the clip is empty.
+	The difference between popNewGroup and pasteGroup is that pasteGroup will return false if the clip is empty,
+	while popNewGroup will simply pop a new “blank” clone if the clip is empty.
 	After creating an instance of the FormFieldGenie, the clipboard Object may be accessed through instance.clipboard;
 	each clipboard Object property may contain another Object with two properties:
 		{
@@ -106,10 +121,10 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 
 
 		group =
-			DOM node object - either the text-input / text-box, or one of its parent containing nodes (up the DOM hierarchy).
-			If a containing node, it may contain any other DOM nodes including nested “batchs” and their “groups”.
+			DOM node object - either the text-input / text-box (i.e. a “fieldNode”), or one of its parent containing nodes (up the DOM hierarchy).
+			If a containing node, it may contain any other DOM nodes including nested “batches” and their “groups”.
 			The “batch” is the DOM node that contains the complete list/collection of “groups”.
-			However, if  opts.doso='addTo'  is passed into the  popNewField()  method, then the value which is passed in as
+			However, if  opts.doso='addTo'  is passed into the  popNewGroup()  method, then the value which is passed in as
 			group  should instead be the containing node (batch) that holds all the  groups
 			Very simple Example of HTML:
 
@@ -119,7 +134,7 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 					<input type='text' name='myName[0]'
 						onfocus='Genie.tabbedOut=false'
 						onkeydown='Genie.catchTab(event)'
-						onblur='Genie.popNewField(this.parentNode)' />
+						onblur='Genie.popNewGroup(this.parentNode)' />
 				</label>
 			<fieldset>
 
@@ -127,7 +142,7 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 			• The <fieldset> is the batch
 			• The <labeL> is the group – this could be another tag holding many <labels> and their <inputs>
 				There may be any number of groups within the batch
-			• The <input> is the inputNode a.k.a. field
+			• The <input> is the fieldNode
 			• When the end-user of the above example types something into the input box and then exits it, the HTML above “magically” becomes:
 
 			<script> var Genie=new SoftMoon.WebWare.FormFieldGenie </script>
@@ -136,13 +151,13 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 					<input type='text' name='myName[0]'
 						onfocus='Genie.tabbedOut=false'
 						onkeydown='Genie.catchTab(event)'
-						onblur='Genie.popNewField(this.parentNode)' />
+						onblur='Genie.popNewGroup(this.parentNode)' />
 				</label>
 				<label>
 					<input type='text' name='myName[1]'
 						onfocus='Genie.tabbedOut=false'
 						onkeydown='Genie.catchTab(event)'
-						onblur='Genie.popNewField(this.parentNode)' />
+						onblur='Genie.popNewGroup(this.parentNode)' />
 				</label>
 			<fieldset>
 
@@ -153,29 +168,16 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 
 			minGroups: minimum number of clones (groups) in the batch WHEN USING THE DEFAULT dumpEmpties FUNCTION (see below)
 
-			indxTier: number of index “tiers” to ignore at the end of a name; used to skip over tier(s) when updating names.
-				“climbTiers” must be true (see below).
-				example:  name → myField[4][3][2]  when indxTier=2 the FormFieldGenie updates/modifies the index that contains “4”
+			indxTier: number of index “tiers” to ignore from the beginning or end of a name; used to skip over tier(s) when updating names.
+				Positive values skip over tiers starting from the beginning of the name progressing forwards (i.e. a zero-based count),
+				while negative values count tiers starting from the end of the name progressing backwards.
+				example:  name → myField[4][3][2]  when indxTier=(2) the FormFieldGenie updates/modifies the index that contains “2”
+				example:  name → myField[4][3][2]  when indxTier=(-2) the FormFieldGenie updates/modifies the index that contains “3”
 				note the Genie looks for the ==next numeric== index, so note the following
-				example:  name → myField[4][subsection][3][2]  when indxTier=2 the FormFieldGenie updates/modifies the index that contains “4”
-
-			climbTiers: true | false   check all levels of indices for a numeric value (true is default), or only the last?
-
-			updateValue: 'all' | 'non-implicit' | 'non-indexed' | 'indexed' | 'implicit'
-				Controls the application of updating _values_ instead of _names_ in
-						checkbox and radio-button fields that have _values_ formatted similar to "[0]"
-				Any other (string value) condition passed yields no values updated (use "no" or "none" or "nope" or "nay" etc).
-				No passed condition yields the default action "all".
-						=== examples ===
-				all             name  name[string]  name[number]  name[]
-				non-implicit    name  name[string]  name[number]
-				non-indexed     name
-				indexed         name[string]  name[number]
-				implicit        name[]
-						=== examples only show final indices or lack of; indexed names may have additional indices  ===
+				example:  name → myField[4][subsection][3][2]  when indxTier=(-3) the FormFieldGenie updates/modifies the index that contains “4”
 
 			focusField: number
-				========= this applies to pasteField() and popNewField() only =========
+				========= this applies to pasteGroup() and popNewGroup() only =========
 				Pass the field number (counted from ZERO) of the text/filename field you want the cursor focused on
 				when popping a newly cloned group, or pasting a cloned group with  opts.focus=true
 
@@ -183,15 +185,15 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 			groupTag: string → HTML_tagName.toUpperCase();
 				these are used to identify which children of a batch are a true group; other children are just ignored “fluff”
 
-			focus: true | false
-				========= this applies to pasteField() and popNewField() only =========
+			doFocus: true | false
+				========= this applies to pasteGroup() and popNewGroup() only =========
 				If true, the  focusField  will receive focus, whether or not the tab-key was pressed.
 				If false, the  focusField  will not receive focus when the tab key is pressed.
 				If no value is passed, then the tab-key will cause the focusField to receive focus
 				when popping a new fieldNodeGroup.
 
 			dumpEmpties: true | false | function(empty_groupInQuestion, deleteFlag)  remove emptied groups on the fly?
-				========= this applies to deleteGroup() and popNewField() only, and not when inserting or pasting =========
+				========= this applies to deleteGroup() and popNewGroup() only, and not when inserting or pasting =========
 				if a function is supplied, it should return  true | false | null
 				and if null is returned, the function should remove the field itself.
 				If you use deleteGroup(), the fieldNodeGroup will be removed even if dumpEmpties===false;
@@ -199,7 +201,7 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 					and its return value (true|false) will be respected.
 
 			checkForFilled: 'all' ‖ 'one' ‖ 'some' ‖ 'any'
-				========= this applies to deleteGroup() and popNewField() only, and not when inserting or pasting =========
+				========= this applies to deleteGroup() and popNewGroup() only, and not when inserting or pasting =========
 				If set, the corresponding text/filename fields in the nodeGroup will be checked.
 				By default only the -first- one is checked.
 				If 'one' or 'some' or possibly 'any', the  checkField  option should be used also (see below).
@@ -222,7 +224,7 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 					if all of the fields in the group are empty, the group may be dumped (automatically deleted).
 
 			checkField: number ‖ array
-				========= this applies to deleteGroup() and popNewField() only, and not when inserting or pasting =========
+				========= this applies to deleteGroup() and popNewGroup() only, and not when inserting or pasting =========
 				Used in conjunction with  checkForFilled
 				• if checkField is a number (when  checkForFilled = 'one' ‖ 'some')
 					Pass the field number (counted from ZERO) of the field or fields you want checked for "Empty" when popping.
@@ -264,7 +266,7 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 				The function will be passed the fieldNodeGroup AFTER it has been added to the document.
 				This Function is called only when a new fieldNodeGroup is being popped or pasted over.
 
-			fieldsetCustomizer: function(batch, pasteOver, cbParams)  { your customizing code }
+			batchCustomizer: function(batch, pasteOver, cbParams)  { your customizing code }
 				This is called when a new fieldNodeGroup is being popped, pasted,
 					or when a fieldNodeGroup is deleted or was empty and has been dumped.
 				It is called from a setTimeout function, so the DOM will be fully updated.
@@ -273,25 +275,25 @@ function FormFieldGenie(opts, HTML_clipMenu)  {
 				including the new one after it has been added to the document, not simply the newly cloned group.
 
 			doso: true | "insert" | "paste"
-				========= this applies to popNewField() and pasteField() only =========
-				If you pass (Boolean)true when using popNewField(), a new field will be popped at the end regardless of whether the last field is empty;
+				========= this applies to popNewGroup() and pasteGroup() only =========
+				If you pass (Boolean)true when using popNewGroup(), a new field will be popped at the end regardless of whether the last field is empty;
 					but not exceeding maxGroups.  Empty fieldNodeGroups may be removed as usual.
-				Empty fieldNodeGroups will NOT be automatically removed if "insert" when using popNewField().
-				If you pass "insert" or "paste" when using popNewField(), a new field will be popped and inserted BEFORE the passed fieldNodeGroup,
+				Empty fieldNodeGroups will NOT be automatically removed if "insert" when using popNewGroup().
+				If you pass "insert" or "paste" when using popNewGroup(), a new field will be popped and inserted BEFORE the passed fieldNodeGroup,
 					regardless of whether the last field is empty; but not exceeding maxGroups.
-				With popNewField(), “insert” inserts an empty fieldNodeGroup.
-				With pasteField(), “insert” inserts the selected clip.
-				With popNewField(), “paste” inserts the selected clip.
+				With popNewGroup(), “insert” inserts an empty fieldNodeGroup.
+				With pasteGroup(), “insert” inserts the selected clip.
+				With popNewGroup(), “paste” inserts the selected clip.
 
 			addTo: true
-				========= this applies to popNewField() only =========
-				If you pass  opts.addto=true, then the value that would be passed into popNewField as  fieldNodeGroup
+				========= this applies to popNewGroup() only =========
+				If you pass  opts.addto=true, then the value that would be passed into popNewGroup as  fieldNodeGroup
 					will be instead considered the  batch.
-				This will allow you to add a new field to empty  batchs
+				This will allow you to add a new field to empty  batches
 					but only if •the Genie.clone is set; •or opts.doso='paste' while the clipboard has contents.
 				Passing  opts.addto=true  acts similar as passing  opts.doso=true  in that it will always pop a new field
 					(unless as noted above the  batch  is empty and there is no clone and no paste)
-				Note that pasteField() with opts.doso='insert' internally calls calls popNewField(), and this option
+				Note that pasteGroup() with opts.doso='insert' internally calls calls popNewGroup(), and this option
 					may then take effect.
 
 			clip: Object-member-identifier  ( Number | String.match( /^[_a-z][_a-z0-9]*$/i ) )
@@ -318,9 +320,7 @@ FormFieldGenie.ConfigStack.prototype={
 	constructor: FormFieldGenie.ConfigStack,
 
 //you may re-define defaults globally through these properties
-	indxTier: 0,
-	climbTiers: true,
-	updateValue: "all",
+	indxTier: -1,
 	focusField: 0,
 	doFocus: null,
 	isActiveField: undefined,   /*Boolean  or  user function returns Boolean;  see also isActiveField() method*/
@@ -329,20 +329,19 @@ FormFieldGenie.ConfigStack.prototype={
 	maxGroups: 100,
 	groupClass: "",       /* string  or  RegExp */
 	groupTag: null,        /* htmlTagNameString.toUpper() */
-//	nodeName: null,  /*specific nodeName of Elements in a group when checking to dump empties*/
 	checkForFilled: "one",  // ‖ any ‖ all ‖ some
 	checkField: 0, //← zero(0)-based index when checkForFilled='one';  1-based count when ='some';  may be an Array of indices for 'any' & 'some';  unused otherwise
-	updateName: null,
+	updateName: null,       /*user function*/
 	cloneCustomizer: null,  /*user function*/
 	eventRegistrar: null,   /*user function*/
-	fieldsetCustomizer: null,   /*user function*/
+	batchCustomizer: null,  /*user function*/
 	minPixWidth: 4,  //for an input to be "active"
 	minPixHeight: 4,  // ↑
 	clone: null,
-	clip: "_FormFieldGenie_system_",  //if you cut/copy/paste w/out specifying the clipboard “clip”
-	only_clips_inAll: true, // when using Genie.getClip('all clips'), only return the clipboard.clips array ?
+	clip: "_system_",  //if you cut/copy/paste w/out specifying the clipboard “clip”
+	only_clips_inAll: true, // when using Genie.getClip('all clips'), only return the clipboard.clips array ? (clipboard is itself an Array that can hold other clips).
 	no_system_inAllClips: true, // when using Genie.getClip('all clips'), avoid clips with names that contain _system_ ?
-	namedElements: 'input, textarea, select, button',  //←this must work with querySelectorAll();  These are elements who’s names will be updated
+	namedElements: 'input, textarea, select, button',  //←this string must work with querySelectorAll();  These are elements who’s names will be updated
 	userDataInputTypes: [  // these are the input-types that users have to type something into for them to have a “value”
 		'text', 'search', 'tel', 'url', 'email', 'password', 'datetime', 'date',
 		'month', 'week', 'time', 'datetime-local', 'number', 'color', 'file' ]
@@ -427,8 +426,8 @@ function dumpEmpties(elmnt)  {
 function dumpEmpties(elmnt)  {
 	elmnt=elmnt.parentNode.children;
 	for (var count=0, i=0; i<elmnt.length; i++)  {
-		if (typeof config.nodeName !== 'string'
-		||  elmnt[i].nodeName===config.nodeName)
+		if (typeof config.groupTag !== 'string'
+		||  elmnt[i].nodeName===config.groupTag)
 				count++;  }
 	return (count>config.minFields);  }
 */
@@ -456,7 +455,7 @@ function dumpEmpties(elmnt)  {
 		else if (config.groupClass instanceof RegExp)  groupClass=config.groupClass;
 		else groupClass="";
 
-		if (addTo)  batch=group;  // only myGenie.popNewField(batch, {addTo:true})
+		if (addTo)  batch=group;  // only myGenie.popNewGroup(batch, {addTo:true})
 		else  batch=group.parentNode;  //may be any parent tag; not limited to <fieldset> <ol> <td> <div> etc.
 
 	}  // close init
@@ -503,7 +502,7 @@ function dumpEmpties(elmnt)  {
 				if (config.checkField instanceof Array)  {
 					for (const i of config.checkField)  {
 						if (fields[i]===undefined)  return null;
-						if ((fields[i].value.length===0)^(check==="isFull?"))  return false;  }
+						if ((fields[i].value.length===0)^(check==="isEmpty?"))  return false;  }
 					return (fields.length) ? true : null;  }
 				//all of the first “checkField” number of fields in the group must be filled for the group to be "full";  (do we pop a new field?)
 				//all of the first “checkField” number of fields must be empty to be empty;  (do we dump this group?)
@@ -514,7 +513,7 @@ function dumpEmpties(elmnt)  {
 				//all must be empty to be empty;  (do we dump this group?)
 				s??=fields.length;
 				for (let i=0; i<s; i++)  {
-					if ((fields[i].value.length===0)^(check==="isFull?"))  return false;  }
+					if ((fields[i].value.length===0)^(check==="isEmpty?"))  return false;  }
 				return (fields.length) ? true : null;  }
 		else  return (fields.length>config.focusField) ?  fields[config.focusField]  :  null;  }
 
@@ -540,16 +539,16 @@ function dumpEmpties(elmnt)  {
 	function updateGroupNames(group, indxOffset=1, resetFlag=true)  {  //also reset default values when resetFlag==true
 		if (group.hasChildNodes())
 			for (const field  of  group.querySelectorAll(config.namedElements))  {
-				field.name=updateName(field);
-				if (resetFlag)  updateValsEtc(field);  }
+				field.name=updateName(field, group);
+				if (resetFlag)  resetValsEtc(field);  }
 		else  {
-			group.name=updateName(group);
-			if (resetFlag)  updateValsEtc(group);  }
+			group.name=updateName(group, group);
+			if (resetFlag)  resetValsEtc(group);  }
 
 		//extend updateGroupNames()
 
-		function updateValsEtc(field)  {
-			if (field.nodeName==='INPUT'  &&  field.type.toLowerCase()==='file')  {    // alert("==="+field.value+"==="+field.type.toLowerCase()+"===");  continue;
+		function resetValsEtc(field)  {
+			if (field.nodeName==='INPUT'  &&  field.type.toLowerCase()==='file')  {
 				field.value="";  //most browsers ignore this anyway
 				if (field.value=="")  return;
 				const newFileField=document.createElement('input');  // alert('new');
@@ -562,45 +561,53 @@ function dumpEmpties(elmnt)  {
 			if (field.defaultChecked!==undefined)  field.checked=field.defaultChecked;
 			if (field.selectedIndex!==undefined)  field.selectedIndex=selectDefaults(field);  }
 
-		function updateName(field)  { var valIncr;
+		function updateName(field, group)  {
 			if (config.updateName)  {
-				const fieldName=config.updateName(field, indxOffset, batch, config.cbParams);
+				const fieldName=config.updateName(field, indxOffset, group, batch, config.cbParams);
 				if (typeof fieldName === "string")  return fieldName;  }
-			if (config.updateValue==="all"  &&  valueUpdater(field))  return field.name;
-			if (field.name.charAt(field.name.length-2)!="[")  {
-				if (config.updateValue=="non-implicit"  &&  valueUpdater(field))  return field.name;
-				if (field.name.charAt(field.name.length-1)!="]")  {  // non-indexed  name
-					if (config.updateValue=="non-indexed"  &&  valueUpdater(field))  return field.name;
-					if ((valIncr=field.name.match(/(.*[^0-9])?([0-9]+)$/))!==null)
-						return ((typeof valIncr[1] !== "undefined") ? valIncr[1] : "") + (Number(valIncr[2])+indxOffset).toString();
-					else  return field.name;  }
-				else  {  //indexed with contained value  name[value]
-					if (config.updateValue==="indexed"  &&  valueUpdater(field))  return field.name;
-					return updateTieredName(field.name, field.name.length);  }  }
-			else  {  //indexed with no contained value  name[]
-				if (config.updateValue==="implicit"  &&  valueUpdater(field))  return field.name;
-				if (field.tagName==='INPUT'  &&  field.type==='checkbox'  &&  field.name.substr(-3)=="][]")
-					return updateTieredName(field.name, field.name.length-2);
-				else  return field.name;  }  }
+			if (field.hasAttribute('update-value-genie')  &&  valueUpdater(field))  return field.name;
+			if (field.name.endsWith("]"))  return updateTieredName(field);
+			const valIncr=field.name.match(/(.*[^0-9])?([0-9]+)$/); 
+			if (valIncr!==null)
+				return ((typeof valIncr[1] !== "undefined") ? valIncr[1] : "") + (Number(valIncr[2])+indxOffset).toString();
+			else  return field.name;  }
 
-		function valueUpdater(field)  { var valIncr;
+		function valueUpdater(field)  { 
+			const genieNames=field.getAttribute('update-value-genie')?.split(',').map(n=>n.trim());
+			if (genieNames!==null  &&  !genieNames.includes(thisGenie.name))  return false;
 			if (field.tagName==='INPUT'  &&  (field.type==='radio'  ||  field.type==='checkbox')
-			&&  (valIncr=field.value.match(/^\[([0-9]+)\]$/)))  {
-				field.value="["+(Number(valIncr[1])+indxOffset).toString()+"]";  return true;  }  }
+			&&  /^([0-9]*\.)?[0-9]+$/.test(field.value))  {
+				field.value=(parseFloat(field.value)+indxOffset).toString();  return true;  }  }
 
-		//find and update the last index with a numeric value, or return the original name if none are numeric
-		function updateTieredName(fieldName, position)  { var indx, indxCount=0;
-			position=(typeof position == "number") ?  fieldName.lastIndexOf("[", position-1)  :  fieldName.lastIndexOf("[");
-			do {indx=( Number(fieldName.substring(position+1, fieldName.indexOf("]", position))) +indxOffset ).toString();}
-			while ((indxCount++<config.indxTier  ||  indx==="NaN")
-				&&  config.climbTiers  &&  position>3  &&  (position=fieldName.lastIndexOf("[", position-1)) != (-1));
-			return (indx==="NaN") ? fieldName  :
-				fieldName.substring(0, position+1) +indx+ fieldName.substring(fieldName.indexOf("]", position));  }
+		function updateTieredName(field)  {
+			const
+				nummedTiers=new Array,
+				tierRegEx=/\[\d+\]/g;
+			var tier, indxTier;
+			while (tier=tierRegEx.exec(field.name))  {nummedTiers.push({spec:tier[0], pos:tier.index})};
+			getTierIndex: {
+				if (field.hasAttribute('genie-tier-index'))  { // your Genie names:   ↓↓↓           ↓↓↓           ↓↓↓     
+					// <input name='foo[1][bar][3][baz][7][bing][]' genie-tier-index='myGenie: 0, otherGenie: 1, etcGenie: -2'>
+					//                                                           updates:  [1] ↑          [3] ↑        [7] ↑↑
+					// remember only numeric indexes in the name are “counted”
+					// the default indxTier value of (-1) points to the numerically-implicit index [] at the end
+					indxTier=field.getAttribute('genie-tier-index').split(",").map(s=>s.trim().split(":"));
+					for (const _tier of indxTier)  {
+						if (_tier[0]===thisGenie.name) {indxTier=parseInt(_tier[1]);  break getTierIndex;}  }  }
+				indxTier=config.indxTier;  }
+			if (Number.isNaN(indxTier)  ||  (typeof indxTier !== 'number'  &&  !(indxTier instanceof Number)))  return field.name;
+			if (field.name.endsWith("[]"))  { // an “implicitly numbered tier”
+				if  (indxTier===(-1)  ||  indxTier===nummedTiers.length)  return field.name;
+				nummedTiers.length++;  }
+			if (indxTier>=nummedTiers.length
+			||  (indxTier<0  &&  Math.abs(indxTier)>nummedTiers.length))  return field.name;
+			tier= nummedTiers[ (indxTier<0) ? (nummedTiers.length+indxTier) : indxTier ];
+			return field.name.substring(0,tier.pos+1) + (parseInt(tier.spec.substring(1)) + indxOffset) + field.name.substring(tier.pos+tier.spec.length-1);  }
 
 		function selectDefaults(slct)  {
 			const allOptns=slct.getElementsByTagName('option');
-			var slctdOpt=null;
 			if (allOptns.length==0)  return null;
+			var slctdOpt=null;
 			for (let i=allOptns.length-1; i>=0; i--)  {if (allOptns[i].selected=allOptns[i].defaultSelected)  slctdOpt=i;}
 			return slctdOpt;  }
 
@@ -620,7 +627,7 @@ function dumpEmpties(elmnt)  {
 		var nextGroup=getNextGroup(group);
 		batch.removeChild(group);
 		while (nextGroup!==null) {updateGroupNames(nextGroup, -1, false);  nextGroup=getNextGroup(nextGroup);}
-		if (typeof fieldsetCustomizer == "function")  fieldsetCustomizer(batch, false, config.cbParams);
+		if (typeof batchCustomizer == "function")  batchCustomizer(batch, false, config.cbParams);
 		if (opts  &&  opts.refocus)  setTimeout(function() {getField(getLastGroup()).focus();}, 1);
 		return true;  }
 
@@ -632,10 +639,10 @@ function dumpEmpties(elmnt)  {
 		return _clone_;  }
 
 
- function popNewField(focusGroup, opts, clip, avoidTimeout)  {
+ function popNewGroup(focusGroup, opts, clip, avoidTimeout)  {
 	var newGroup, cloned, groupCount=0, group=getFirstGroup(), flag=false, pasted=false;
 	function timeoutForInsert()  {
-		if (typeof config.fieldsetCustomizer === 'function')  config.fieldsetCustomizer(batch, pasted, config.cbParams);
+		if (typeof config.batchCustomizer === 'function')  config.batchCustomizer(batch, pasted, config.cbParams);
 		if (config.doFocus!==false)  getField(newGroup).focus();  }
 
 	if (opts  &&  (opts.doso==='insert'  ||  opts.doso==='paste'))  {
@@ -654,7 +661,7 @@ function dumpEmpties(elmnt)  {
 				alignSelectValues(cloned, newGroup);
 				offSet=groupPos-clip.position;  }
 			else if (clip instanceof Array)  {
-				for (var i=0; i<clip.length; i++)  {if (popNewField.call(this, focusGroup, opts, clip[i], true))  flag=true;}
+				for (let i=0; i<clip.length; i++)  {if (popNewGroup.call(this, focusGroup, opts, clip[i], true))  flag=true;}
 				if (flag)  setTimeout(timeoutForInsert, 0);
 				return flag;  }
 			else  return false;  }
@@ -685,7 +692,8 @@ function dumpEmpties(elmnt)  {
 		newGroup.dispatchEvent(new CustomEvent('formfieldgenieclone',
 			{detail: {genie: this, clip:{node:cloned, position:groupPos-offSet}, pasted:pasted}, bubbles: true, cancelable: true}));
 		if (!avoidTimeout)  setTimeout(timeoutForInsert, 0);
-		return true;  }
+//		this.lastNewField=newGroup;
+		return newGroup;  }
 	var nextGroup, emptyFlag, removedCount=0;
 	// remove sibling node Groups with empty text fields
 	if (group!==null)
@@ -741,15 +749,15 @@ function dumpEmpties(elmnt)  {
 		var tabbedOut=this.tabbedOut;
 		setTimeout(
 			function () {
-				if (typeof config.fieldsetCustomizer === "function")
-					config.fieldsetCustomizer(batch, false, config.cbParams);
+				if (typeof config.batchCustomizer === "function")
+					config.batchCustomizer(batch, false, config.cbParams);
 				if ((tabbedOut && config.doFocus!==false)  ||  config.doFocus)
 					getField(getLastGroup()).focus();  },
 			0);  }
 
-	if (flag)  this.lastNewField=newGroup;
+	//if (flag)  this.lastNewField=newGroup;
 
-	return flag;  }
+	return flag && newGroup;  }
 
 //===============================================================
 
@@ -757,19 +765,19 @@ function dumpEmpties(elmnt)  {
 // ======= user methods =======
 
 
-FormFieldGenie.prototype.popNewField=function(focusGroup, opts)  {
+FormFieldGenie.prototype.popNewGroup=function(focusGroup, opts)  {
 	try {
 		init.call(this, focusGroup, opts, opts?.addTo);
-		return popNewField.call(this, focusGroup, opts);  }
+		return popNewGroup.call(this, focusGroup, opts);  }
 	finally {if (opts)  this.config.cull();}  }
 
-FormFieldGenie.prototype.pasteField=function(group, opts)  {
+FormFieldGenie.prototype.pasteGroup=function(group, opts)  {
 	try {
 		init.call(this, group, opts);
 		var flag, clip;
 		if ( !( (clip=this.getClip(config.clip))  &&  (clip instanceof Array  ||  clip.node instanceof Element) ) ) return false;
 		if (opts  &&  opts.doso==='insert')  {
-			opts.doso='paste';  flag=popNewField.call(this, group, opts, clip);  opts.doso='insert';
+			opts.doso='paste';  flag=popNewGroup.call(this, group, opts, clip);  opts.doso='insert';
 			return flag;  }
 		const newGroup=clip.node.cloneNode(true);
 		alignSelectValues(clip.node, newGroup);
@@ -781,10 +789,10 @@ FormFieldGenie.prototype.pasteField=function(group, opts)  {
 		newGroup.dispatchEvent(new CustomEvent('formfieldgenieclone',
 			{detail: {genie: this, clip:clip, pasted:'paste-over'}, bubbles: true, cancelable: true}));
 		setTimeout(function() {
-			if (typeof config.fieldsetCustomizer === 'function')  config.fieldsetCustomizer(batch, 'paste-over', config.cbParams);
+			if (typeof config.batchCustomizer === 'function')  config.batchCustomizer(batch, 'paste-over', config.cbParams);
 			if (opts  &&  opts.doso)  {
 				const ods=opts.doso;  opts.doso=null;
-				popNewField.call(thisGenie, group, opts);
+				popNewGroup.call(thisGenie, group, opts);
 				opts.doso=ods;  }
 			if (config.doFocus)  getField(newGroup).focus();  }, 0);
 		return true;  }
@@ -818,6 +826,15 @@ FormFieldGenie.prototype.copyGroup=function(group, opts)  {
 		this.update_HTML_clipMenu();
 		if (opts)  this.config.cull();  }  }
 
+
+// here you can change the language that the FormFieldGenie recognizes in “HTML_clipMenus”
+FormFieldGenie.prototype.TEXT={
+	clip: "clip ",
+	allClips: "all clips",
+	newClip: "new clip",
+	confirm: "Do you want to clear this Form's Clipboard?"
+	};
+
 // note that when  ref='clip X'  (where X is a number) clipboard.clips[X-1] is returned
 // but that when  ref=X  (where X is a number) clipboard.clips[X] is returned
 FormFieldGenie.prototype.getClip=function(ref, doInit)  { var x;
@@ -825,7 +842,7 @@ FormFieldGenie.prototype.getClip=function(ref, doInit)  { var x;
 		if (doInit)  this.clipboard=new Object;
 		else  return false;  }
 	if (typeof ref === 'string')  {
-		if (ref.toLowerCase()==="all clips")  {
+		if (ref.toLowerCase()===this.TEXT.allClips)  {
 			var allClips= (this.clipboard.clips instanceof Array  &&  this.clipboard.clips.length>0  &&  this.clipboard.clips.slice(0));
 			if (config.only_clips_inAll)  return allClips;
 			allClips= allClips || new Array;
@@ -833,7 +850,7 @@ FormFieldGenie.prototype.getClip=function(ref, doInit)  { var x;
 				if (x==='clips'  ||  (config.no_system_inAllClips  &&  x.match( /_system_/ )))  continue;
 				allClips.push(this.clipboard[x]);  }
 			return allClips.length>0  &&  allClips;  }
-		if (ref.toLowerCase()==="new clip")  {
+		if (ref.toLowerCase()===this.TEXT.newClip)  {
 			if (!(this.clipboard.clips instanceof Array))  this.clipboard.clips=new Array;
 			return this.clipboard.clips[this.clipboard.clips.length]=new Object;  }
 		if (!doInit  &&  this.clipboard[ref] instanceof Object)  return this.clipboard[ref];
@@ -850,7 +867,7 @@ FormFieldGenie.prototype.getClip=function(ref, doInit)  { var x;
 
 
 FormFieldGenie.prototype.clearClipboard=function(confirmed)  {
-	if (confirmed  ||  confirm("Do you want to clear this Form's Clipboard?"))  {
+	if (confirmed  ||  confirm(this.TEXT.confirm))  {
 		this.clipboard=new Object;
 		this.update_HTML_clipMenu();  }  }
 
@@ -859,28 +876,28 @@ FormFieldGenie.prototype.update_HTML_clipMenu=function()  {
 	if (!(this.HTML_clipMenu instanceof Element)  ||  typeof this.clipboard !== 'object')	 return false;
 	const
 		ul=this.HTML_clipMenu.getElementsByTagName('ul'),
-		items=document.createDocumentFragment(),
-		stndrd=this.HTML_clipMenu.getAttribute('standardItems') || 'genie';
+		items=document.createDocumentFragment();
 	if (this.clipboard.clips instanceof Array)  for (let i=0; i<this.clipboard.clips.length; i++)  {
 		if (this.clipboard.clips[i])  {
 			const li=document.createElement('li');
-			//li.innerHTML='clip '+i;
-			li.appendChild(document.createTextNode('clip '+(1+i)));
+			li.appendChild(document.createTextNode(this.TEXT.clip+(1+i)));
 			items.appendChild(li);  }  }
 	if (!config.only_clips_inAll)  for (const i in this.clipboard)  {
 		if (i==='clips'  ||  (config.no_system_inAllClips  &&  i.match( /_system_/ )))  continue;
 		const li=document.createElement('li');
-		//li.innerHTML=i;
 		li.appendChild(document.createTextNode(i));
 		items.appendChild(li);  }
 	for (let i=0; i<ul.length; i++)  {
 		const li=ul[i].getElementsByTagName('li');
-		for (let j=0; j<li.length; )  {if (li[j].classList.contains(stndrd))  j++;  else  ul[i].removeChild(li[j]);}
+		for (let j=0; j<li.length; )  {if (li[j].hasAttribute('standard'))  j++;  else  ul[i].removeChild(li[j]);}
 		if (items.hasChildNodes())  {
 			if  ((i+1) === ul.length)
 				ul[i].appendChild(items);
 			else
-				ul[i].appendChild(items.cloneNode(true));  }  }  }
+				ul[i].appendChild(items.cloneNode(true));  }  }
+	const event=new CustomEvent('ffgeniemenuupdate', {bubbles:true});
+	event.genie=this;
+	this.HTML_clipMenu.dispatchEvent(event);  }
 
 
 
@@ -889,27 +906,28 @@ FormFieldGenie.prototype.update_HTML_clipMenu=function()  {
 
 
 /* This is the “HTML clip Menu”
- * You may copy and paste this snippit of HTML into your page – one copy per Genie instance.
+ * You may copy and paste this snippet of HTML into your page – one copy per Genie instance.
  * You may change/add any id or classNames to this HTML for CSS handles.
- * You may modify the <li>TEXT</li> in the outer <menu> but not the inner <ul>s.
+ * You may simply modify the <li>TEXT</li> in the outer <menu> but not the inner <ul>s.
  *  For instance, with a list of names, your TEXT may become: “insert name” “copy name” “cut name” “paste name” “delete name”,
  *  and your confirm dialog may become “Do you want to delete this name?”
+ * The <li>TEXT</li> in the inner <ul>s may be modified only if you modify or replace the FormFieldGenie.TEXT Object.
  * Embedded JavaScript™ event-handler attributes may also be modified and/or expanded as appropriate to your needs;
  *  however, note the FormFieldGenie copies these 'onclick' attributes as it auto-creates new <li> items for each new “clip”
  *  the end-user copies/cuts to.
  *
-<menu id='myGenie_popUpMenu' standardItems='genie'>
-	<li>insert:<span onclick='myGenie.popNewField(this.closest("."+myGenie.config.groupClass), {doso:"insert"})'>empty field</span>
-							<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.pasteField(this.closest("."+myGenie.config.groupClass), {doso:"insert", clip:event.target.className})'>
-								<li class='genie'>all clips</li>
+<menu id='myGenie_popUpMenu'>
+	<li>insert:<span onclick='myGenie.popNewGroup(this.closest("."+myGenie.config.groupClass), {doso:"insert"})'>empty field</span>
+							<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.pasteGroup(this.closest("."+myGenie.config.groupClass), {doso:"insert", clip:event.target.innerText})'>
+								<li standard>all clips</li>
 							</ul></li>
-	<li>copy to:<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.copyGroup(this.closest("."+myGenie.config.groupClass), {clip:event.target.className})'>
-								<li class='genie'>new clip</li>
+	<li>copy to:<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.copyGroup(this.closest("."+myGenie.config.groupClass), {clip:event.target.innerText})'>
+								<li standard>new clip</li>
 							</ul></li>
-	<li>cut to:<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.cutGroup(this.closest("."+myGenie.config.groupClass), {clip:event.target.className})'>
-								<li class='genie'>new clip</li>
+	<li>cut to:<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.cutGroup(this.closest("."+myGenie.config.groupClass), {clip:event.target.innerText})'>
+								<li standard>new clip</li>
 							</ul></li>
-	<li>paste from:<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.pasteField(this.closest("."+myGenie.config.groupClass), {clip:event.target.className})'>
+	<li>paste from:<ul onclick='if (event.phase===Event.BUBBLING_PHASE) myGenie.pasteGroup(this.closest("."+myGenie.config.groupClass), {clip:event.target.innerText})'>
 								</ul></li>
 	<li onclick='if (confirm("Do you want to delete this group?")) myGenie.deleteGroup(this.closest("."+myGenie.config.groupClass))'>delete</li>
 	<li onclick='myGenie.clearClipboard();'>clear clipboard</li>
@@ -925,27 +943,30 @@ myGenie=new SoftMoon.WebWare.FormFieldGenie(opts, document.getElementById('myGen
 //===================================================================================\\
 
 
-// “updateName” plugin for popNewField
+// “updateName” plugin for popNewGroup
 //  usage example:
 // Genie=new SoftMoon.WebWare.FormFieldGenie( {
 //		updateName: SoftMoon.WebWare.FormFieldGenie.updateNameByList,
 //    cbParams: {order:SoftMoon.WebWare.FormFieldGenie.RomanOrder}  } );
-SoftMoon.WebWare.FormFieldGenie.updateNameByList=function(field, indxOffset, params)  { if (typeof params !== 'object')  params=false;
+SoftMoon.WebWare.FormFieldGenie.updateNameByList=function(field, indxOffset, group, batch, params)  {
+	if (typeof params !== 'object')  params=false;
 	const
-		pcre=(params  &&  typeof params.pcre == 'object' &&  params.pcre instanceof RegExp)  ?  params.pcre
+		pcre=(params  &&  params.pcre instanceof RegExp)  ?  params.pcre
 				:  new RegExp(/\[([a-z]+|[0-9]+)\]/),
-		order=(params  &&  typeof params.order == 'object'  &&  params.order instanceof Array)  ?  params.order
+		order=(params  &&  params.order instanceof Array)  ?  params.order
 				:  ["first", "second", "third", "fourth", "fifth", "sixth", "seventh", "eighth", "ninth", "tenth", "eleventh"],
-		lastPosition=field.name.match(pcre);
-	var indx
-	if ( (indx=(Number(lastPosition[1])+indxOffset).toString()) === "NaN" )  {
-		for (var i=0; i<order.length;)  {i++;  if (lastPosition[1]===order[i-1])  break;}
-		if (i+indxOffset>order.length)  indx=(i+indxOffset).toString();  else  indx=order[i-1+indxOffset];  }
-	else  {if (Number(indx)<order.length  &&  Number(indx)>0)  indx=order[Number(indx)-1];}
-	return field.name.substring(0, lastPosition.index+1) +indx+ field.name.substring(lastPosition.index+lastPosition[1].length+1);
-}
+		oldIndex=field.name.match(pcre);
+	var indx=parseInt(oldIndex[1]);
+	if (Number.isNaN(indx))  {
+		const i=order.indexOf(oldIndex[1]);
+		if (i===-1)  {console.error('can not find textual index “'+oldIndex[1]+'” in the “order”:',order,'using:',pcre);  return field.name;}
+		if (i+indxOffset+1>order.length)
+			indx=(i+indxOffset+1).toString();
+		else  indx=order[i+indxOffset];  }
+	else  {if ((indx+=indxOffset)<=order.length  &&  indx>0)  indx=order[indx-1];}
+	return field.name.substring(0, oldIndex.index+1) +indx+ field.name.substring(oldIndex.index+oldIndex[1].length+1);  }
 
 // create a new custom order for the standard plugin  updateNameByList
-SoftMoon.WebWare.FormFieldGenie.RomanOrder=new Object();
-SoftMoon.WebWare.FormFieldGenie.RomanOrder.order=new Array('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii');
-SoftMoon.WebWare.FormFieldGenie.RomanOrder.pcre=null;  //use the default Regular Expression; or you may customize this property
+SoftMoon.WebWare.FormFieldGenie.updateNameByList.RomanOrder=new Object();
+SoftMoon.WebWare.FormFieldGenie.updateNameByList.RomanOrder.order=new Array('i', 'ii', 'iii', 'iv', 'v', 'vi', 'vii', 'viii', 'ix', 'x', 'xi', 'xii', 'xiii');
+SoftMoon.WebWare.FormFieldGenie.updateNameByList.RomanOrder.pcre=null;  //use the default Regular Expression; or you may customize this property
