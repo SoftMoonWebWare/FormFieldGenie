@@ -5,6 +5,7 @@
 <meta name='description' content='A JavaScript tool for multiplying HTML form inputs'>
 <meta name='author' content='Joe Golembieski, SoftMoon-WebWare'>
 <meta name='copyright' content='Copyright © 2010, 2012, 2013, 2015, 2022, 2023 Joe Golembieski, SoftMoon-WebWare'>
+<meta name='last-updated' content='December 19, 2023'>
 <title>FormFieldGenie instructions from SoftMoon-WebWare</title>
 <link rel="icon" type="image/x-icon" href="images/SoftMoonWebWare.gif">
 <style type="text/css">
@@ -119,6 +120,7 @@ main dt {
 	font-weight: bold;
 	font-size: 116.2%;
 	font-family: monospace; }
+main dt + dt,
 main dl dl dt {
 	margin: 0; }
 main dt code { /*CornflowerBlue, 38% opacity;*/
@@ -175,6 +177,8 @@ kbd span {
 	margin: 0 .162em;
 	padding: 0 .618em;
 	font-size: 85.4%;  }
+nobr {
+	white-space: nowrap; }
 </style>
 <script>
 window.addEventListener('DOMready', function() {
@@ -193,6 +197,7 @@ console.log('DOM is ready');
 <figcaption>JavaScript<abbr tm>™</abbr>, <abbr>HTML 5</abbr>, <abbr>CSS 4</abbr>, &amp; <abbr>PHP 8</abbr>:
 <span>Innovative Enterprise level Scripting for interactive sites, <acronym title='software as a service'>SaaS</acronym>, &amp; cross-platform desktop apps</span></figcaption>
 </figure>
+<?php include "SoftMoon-WebWare_header_menu.php"; ?>
 <h1>FormFieldGenie Text-Input Auto-Pop-Up</h1>
 </header>
 
@@ -271,7 +276,7 @@ The Genie will throw an <code>Error</code> on these illegal characters if you tr
 Any whitespace at the beginning or end will be trimmed off and ignored,
 but whitespace in the middle is <abbr>OK</abbr>.&nbsp;
 After creating a Genie instance, you can set or change the name like in this example:&nbsp;
-<code>myGenie.name='foo'</code></p>
+<code><var>myGenie</var>.name='foo'</code></p>
 
 <p>When adding a new form-field or group of form-fields (using the <code>popNewGroup()</code> method),
 the FormFieldGenie can create (clone) one based on what already exists in the form (more on that below),
@@ -292,18 +297,18 @@ myGenie.popNewGroup(………)</code>
 
 <h2>Using the FormFieldGenie</h2>
 
-<p>The first parameter passed to this class’ methods is the entire
+<p>The first parameter passed to most of this class’ methods (the “actionable” methods) is the entire
 <acronym>DOM</acronym> Element Node you want auto-regenerated, deleted, cut, copied, inserted before, or pasted-over.&nbsp;
 A quick look at the source code of the demonstration example will help clarify this.&nbsp;
 If you only need the form field itself repeated, pass the value of <code>this</code> to the method.&nbsp;
-Remember, in an event handler for form fields, the keyword <code>this</code> refers to the
+Remember, in an event handler attached to form fields, the keyword <code>this</code> refers to the
 <acronym>DOM</acronym> node of the form-field itself.&nbsp;
 If the field has a <code>&lt;label&gt;</code> Element (or any other Element) around it that you want cloned also,
 simply pass <code>this.parentNode</code>.&nbsp;
 If you want to clone a whole group of fields and associated text,
 simply repeat <code>parentNode</code> in a chain as many times as needed to move up the <acronym>DOM</acronym> tree.&nbsp;
 Alternatively, you could use the <code>.closest()</code> method of a <abbr>DOM</abbr> Element,
-perhaps relating to the class-name you assign to your group
+perhaps relating to the class-name you assign to your “<code><var>group</var></code>”
 (see also <code>groupClass</code> in the <a href='#config_stack'>ConfigStack</a> description).&nbsp;
 <note><strong>Note</strong> that the FormFieldGenie started out as a single simple function
 back in the days of dinosaur browsers,
@@ -319,10 +324,11 @@ greatly simplifying the application of this class to your <abbr>HTML</abbr>.</no
 <p>From there, the class makes one requirement:
 there must be an Element enclosing the <code><var>group</var></code> (see below) you want cloned.&nbsp;
 The clones are added into this enclosing Element.&nbsp; First, let’s be clear that <em>any</em>
-<abbr>HTML</abbr> “elements” may be used; it does not matter to the class.&nbsp;
+<abbr>HTML</abbr> “elements” may be used; it does not matter to the FormFieldGenie.&nbsp;
 For the sake of discussion, we will refer to these these as follows:</p>
 <ul>
-<li>The <code>&lt;input&gt;</code> and <code>&lt;textarea&gt;</code> <acronym>DOM</acronym> <abbr>HTML</abbr> Elements themselves
+<li>The <code>&lt;input&gt;</code>, <code>&lt;textarea&gt;</code>, and <code>&lt;select&gt;</code>
+<acronym>DOM</acronym> <abbr>HTML</abbr> Elements themselves
 are referred to as the <topic><code><var>fieldNode</var></code></topic>
 (only <code>&lt;input&gt;</code> types that are found in the array at <code>instance.config.userDataInputTypes</code> —
 see <a href='#config_stack'>ConfigStack</a>).&nbsp;
@@ -371,18 +377,20 @@ since they get cloned with the Element, whereas “attached EventListeners” do
 directly following the last <code><var>group</var></code>.&nbsp;
 See also the <code>config.groupClass</code> and <code>config.groupTag</code> options
 in the <a href='#config_stack'>ConfigStack</a> description below.&nbsp;
-In this example above, <code><var>instance</var>.config.groupTag='LABEL'</code> must be set.&nbsp;
+In this example above, <code><var>myGenie</var>.config.groupTag='LABEL'</code> must be set.&nbsp;
 Beyond this, you are free to develop your page the way you see fit.&nbsp;</p>
 
 <p>Any time your keyboard cursor is focused on a <code><var>fieldNode</var></code> and then you leave it
 by pressing the <kbd><span>Tab</span></kbd> key or by clicking the mouse button somewhere else,
-the class looks at all the <code><var>group</var></code>s within the <code><var>batch</var></code>
-<em>that follow the “current” <code><var>group</var></code></em> (the one with keyboard focus within).&nbsp;
+the class looks at the <em>“current” <code><var>group</var></code></em> (the one with keyboard focus within) and
+all the <code><var>group</var></code>s within the <code><var>batch</var></code>
+<em>that follow the “current” <code><var>group</var></code></em>.&nbsp;
 If any are empty (except for the <em>last</em> one), by default it deletes them
 (you can change this default action with options;
 see <code>dumpEmpties()</code> in the <a href='#config_stack'>ConfigStack</a> description below).&nbsp;
 It then looks within the last <code><var>group</var></code> and
-by default finds the <em>first</em> text-based <code>&lt;input&gt;</code> tag
+by default (see <code>checkForFilled</code> and <code>checkField</code> in the <a href='#config_stack'>ConfigStack</a> description below)
+finds the <em>first</em> text-based <code>&lt;input&gt;</code> tag
 (see <code>userDataInputTypes</code> in the <a href='#config_stack'>ConfigStack</a> description below),
 or if there are no <code>&lt;input&gt;</code>s, by default finds the <em>first</em> <code>&lt;textarea&gt;</code>,
 then looks to see if anything was typed in (or similar for <code>type='file'</code>).&nbsp;
@@ -392,8 +400,9 @@ the class &lsquo;pops’ a new <code><var>group</var></code>.</p>
 <p>If the end-user pressed the <kbd><span>Tab</span></kbd> key from within a <code><var>fieldNode</var></code> (to exit it)
 and a new <code><var>group</var></code> was popped, by default
 the cursor is focused within a specified <code><var>fieldNode</var></code> of the new <code><var>group</var></code>.&nbsp;
-If nothing was popped, the cursor is passed onto the next form field as usual.&nbsp;
-If the end-user (mouse-)“clicked” out of the <code><var>fieldNode</var></code>, the usual action is taken depending on where you click,
+If nothing was popped, the cursor is controlled by the browser as usual, and typically is passed onto the next form field.&nbsp;
+If the end-user (mouse-)“clicked” out of the <code><var>fieldNode</var></code>,
+the usual action is taken by the browser depending on where you click,
 whether or not a new <code><var>group</var></code> was popped.</p>
 
 <p>That sums up the main framework of the class.&nbsp;
@@ -538,58 +547,126 @@ the clipboard Object may be accessed through <code><var>instance</var>.clipboard
 each clipboard Object property may contain an individual clip (<acronym>DOM</acronym> node).&nbsp;
 For more details, see the “<a href='#options'>options</a>” description below.</p>
 
-<p>The <topic><code>HTML_clipMenu</code></topic> is passed in as the second parameter when creating an instance of the FormFieldGenie.&nbsp;
-Find it / modify it as the property: <code><var>myGenie</var>.HTML_clipMenu</code> of your FormFieldGenie instance.&nbsp;
+<p>The <topic><code>HTML_clipMenu</code></topic> option is used
+when you want to allow your end-users the ability to cut/copy/paste/delete
+entire form sections (<code><var>group</var></code>s — when copied/cut we call them “clips”)
+into a <strong>multi-clip</strong> clipboard.&nbsp;
 It should be an actual snippet of <abbr>HTML</abbr> with a specific format.&nbsp;
-In the example shown below, we would do something like:</p>
+The FormFieldGenie will update the contents of this <abbr>HTML</abbr> menu by automatically
+adding/deleting <code>&lt;li&gt;</code> Elements that reference copied/cut “clips.”&nbsp;
+These “clips” are handled as special by the FormFieldGenie and they have their own
+Array in the clipboard Object: <code><var>myGenie</var>.clipboard.clips</code>.&nbsp;
+In addition, the FormFieldGenie can manage keyboard and mouse interactions with the menu,
+<em>if it is “bound” to the Genie instance</em>.&nbsp;
+To “bind” the <code>HTML_clipMenu</code> to your Genie instance you <em>either</em>
+• pass it in as the second parameter when creating an instance of the FormFieldGenie and it will be automatically “bound”; or
+• “bind” it to the Genie instance using for example <code><var>myGenie</var>.bind_clipMenu()</code>.&nbsp;
+If you want to customize management of the end-user interaction with the menu,
+but still want its contents updated when the end-user cuts/copies/pastes/deletes etc.,
+do not bind it, instead set it as the property: <code><var>myGenie</var>.HTML_clipMenu</code> of your Genie instance.&nbsp;
+When updating the menu, new <code>&lt;li&gt;</code> Elements that are added
+can be automatically given the <code>tabindex</code> attribute.&nbsp;
+“Bound” menus’ <code>&lt;li&gt;</code> Elements always get a <code>tabindex="-1"</code>.&nbsp;
+“Unbound” menus’ <code>&lt;li&gt;</code> Elements get a <code>tabindex</code>
+if the <code>.HTML_clipMenu_tabindex</code> of the Genie’s <code>.config</code> options object is set
+(for example <code><var>myGenie</var>.config.HTML_clipMenu_tabindex</code>).&nbsp;
+That allows you to customize the <code>tabindex</code> value to your needs,
+but typically it would be only <code>"0"</code> or <code>"-1"</code>
+(by default it is set to <code>"-1"</code>).&nbsp;
+Every time the menu’s contents is updated,
+a custom <code>ffgeniemenuupdate</code> Event is dispatched on the menu;
+you can listen for this event and further customize the menu if you need to.
+Two examples are shown below: the first is typical when binding the menu to the Genie;
+the second is a basic suggestion on how <strong>you</strong> could manage an unbound <code>HTML_clipMenu</code>,
+but you might customize it more to your specific needs.</p>
 
-<code>&lt;menu id='myGenie_popUpMenu'&gt;
+<code>&lt;menu id='myGenie_bound_popUpMenu'&gt;
+  &lt;li class='insert' tabindex="-1" controls='myGenie_popUpMenu_insertA myGenie_popUpMenu_insertB'&gt;insert:
+    &lt;span class='new' id='myGenie_popUpMenu_insertA' tabindex="-1"&gt;new group&lt;/span&gt;
+    &lt;ul class='clips' id='myGenie_popUpMenu_insertB'&gt;
+      &lt;li standard tabindex="-1"&gt;all clips&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+  &lt;li class='copy'  tabindex="-1" controls='myGenie_popUpMenu_copy'&gt;copy to:&lt;ul class='clips' id='myGenie_popUpMenu_copy'&gt;
+    &lt;li standard tabindex="-1"&gt;new clip&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+  &lt;li class='cut'   tabindex="-1" controls='myGenie_popUpMenu_cut'&gt;cut to:&lt;ul class='clips' id='myGenie_popUpMenu_cut'&gt;
+    &lt;li standard tabindex="-1"&gt;new clip&lt;/li&gt;&lt;/ul&gt;&lt;/li&gt;
+  &lt;li class='paste' tabindex="-1" controls='myGenie_popUpMenu_paste'&gt;paste from:&lt;ul class='clips' id='myGenie_popUpMenu_paste'&gt;
+    &lt;/ul&gt;&lt;/li&gt;
+  &lt;li class='delete' title='triple-click' tabindex="-1"&gt;delete&lt;/li&gt;
+  &lt;li title='triple-click' tabindex="-1"&gt;clear clipboard&lt;/li&gt;
+&lt;/menu&gt;
+&lt;script&gt;
+myGenie=new SoftMoon.WebWare.FormFieldGenie({<var>…options…</var>}, document.getElementById('myGenie_bound_popUpMenu'));
+&lt;/script&gt;
+</code>
+
+<code>&lt;menu id='myGenie_unbound_popUpMenu'&gt;
   &lt;li&gt;insert:&lt;span onclick='<var>myGenie</var>.popNewGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {doso:"insert"})'&gt;empty field&lt;/span&gt;
-              &lt;ul onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.pasteGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {doso:"insert", clip:event.target.innerText})'&gt;
-                &lt;li standard&gt;all clips&lt;/li&gt;
-              &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;copy to:&lt;ul onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.copyGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {clip:event.target.innerText})'&gt;
-                &lt;li standard&gt;new clip&lt;/li&gt;
-              &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;cut to:&lt;ul onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.cutGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {clip:event.target.innerText})'&gt;
-                &lt;li standard&gt;new clip&lt;/li&gt;
-              &lt;/ul&gt;&lt;/li&gt;
-  &lt;li&gt;paste from:&lt;ul onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.pasteGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {clip:event.target.innerText})'&gt;
-                &lt;/ul&gt;&lt;/li&gt;
+    &lt;ul class='clips' onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.pasteGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {doso:"insert", clip:event.target.innerText})'&gt;
+      &lt;li standard&gt;all clips&lt;/li&gt;
+    &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;copy to:&lt;ul class='clips' onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.copyGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {clip:event.target.innerText})'&gt;
+      &lt;li standard&gt;new clip&lt;/li&gt;
+    &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;cut to:&lt;ul class='clips' onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.cutGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {clip:event.target.innerText})'&gt;
+      &lt;li standard&gt;new clip&lt;/li&gt;
+    &lt;/ul&gt;&lt;/li&gt;
+  &lt;li&gt;paste from:&lt;ul class='clips' onclick='if (event.phase===Event.BUBBLING_PHASE) <var>myGenie</var>.pasteGroup(this.closest("."+<var>myGenie</var>.config.groupClass), {clip:event.target.innerText})'&gt;
+    &lt;/ul&gt;&lt;/li&gt;
   &lt;li onclick='if (confirm("Do you want to delete this group?")) <var>myGenie</var>.deleteGroup(this.closest("."+<var>myGenie</var>.config.groupClass))'&gt;delete&lt;/li&gt;
   &lt;li onclick='<var>myGenie</var>.clearClipboard();'&gt;clear clipboard&lt;/li&gt;
 &lt;/menu&gt;
-&lt;script&gt;myGenie=new SoftMoon.WebWare.FormFieldGenie({<var>…options…</var>}, document.getElementById('myGenie_popUpMenu'));&lt;/script&gt;
+&lt;script&gt;
+myGenie=new SoftMoon.WebWare.FormFieldGenie({<var>…options…</var>});
+myGenie.HTML_clipMenu=document.getElementById('myGenie_unbound_popUpMenu'));
+&lt;/script&gt;
 </code>
 
-<p>This option is used when you want to allow your end-users the ability to cut/copy/paste/delete
-entire form sections (<code><var>group</var></code>s — when copied/cut we call them “clips”)
-and the “menu” would look something like the example above, but customized to your specific needs.&nbsp;
-Note that the <code>standard</code> attribute signifies <code>&lt;li&gt;</code> Elements in the menu that do not get deleted.&nbsp;
-The FormFieldGenie will update this HTML menu by automatically adding/deleting <code>&lt;li&gt;</code> Elements that reference copied/cut “clips.”</p>
+<p>Note that the <code>standard</code> attribute signifies <code>&lt;li&gt;</code> Elements in the <code>&lt;ul&gt;</code>s that do not get deleted.&nbsp;
+You may modify the <kbd>TEXT</kbd> in the lone <code>&lt;span&gt;</code> without hassles.&nbsp;
+<em>For unbound menus</em>, you may modify the <kbd>TEXT</kbd> in the <code>&lt;li&gt;</code> elements that belong to the <code>&lt;menu&gt;</code> without hassles.&nbsp;
+If you need to modify any other text, for clarity in your specific project, or to support another language, etc.,
+you must update the <code>.HTML_clipMenu_TEXT</code> property of your Genie instance
+(for example: <code><var>myGenie</var>.HTML_ClipMenu_TEXT={…<var>your specs</var>…};</code>).&nbsp;
+For instance, with a list of names, your <kbd>TEXT</kbd> may become: “insert name”, “copy name”, “cut name”, “paste name”, “delete name”,
+and your confirm dialog may become “Do you want to delete this name?”.&nbsp;
+See the FormfieldGenie source-code for a description of this Object’s format.&nbsp;
+You can have multiple versions of the basic menu in different languages, and change languages on-the-fly:</p>
 
-<p>You may copy and paste this snippet of HTML shown above into your web-page – one copy per Genie instance.&nbsp;
-You may change/add any <code>id</code> or <code>class</code> names to this HTML for CSS handles.&nbsp;
-The <code><var>myGenie</var></code> variable should be changed to the name of the variable that you use for your specific Genie
-(multiple Genies require multiple variables and multiple <code>HTML_clipMenu</code>s).&nbsp;
+<code><var>myGenie</var>.bind_clipMenu(false);  //unbind the current menu … perhaps it is English
+/* the above step removes the event handlers —
+ * if you think you might re-instate this menu, you can skip this first step
+ * and keep it bound, and just re-set <var>myGenie</var>.HTML_clipMenu directly in the future */
+<var>myGenie</var>.bind_clipMenu(document.getElementById('myGenie_popUpMenu_French'));  //bind the newly selected language menu
+// ¡ if you are not using “bound” menus, skip the preceding first two steps ! … instead use:
+// <var>myGenie</var>.HTML_clipMenu=document.getElementById('myGenie_popUpMenu_French'); 
+<var>myGenie</var>.HTML_ClipMenu_TEXT=French_TEXT;  // our French_TEXT object is predefined elsewhere
+<var>myGenie</var>.update_HTML_clipMenu();  //fill the menu with the appropriate “clip” references
+</code>
+
+<p>You may change/add any <code>id</code> or <code>class</code> names to the <abbr>HTML</abbr> of the menu for <abbr>CSS</abbr> handles;
+however, the existing class-names must remain.&nbsp;
+The <code><var>myGenie</var></code> variable in the “unbound” menu should of course
+be changed to the name of the variable that you use for your specific Genie
+(multiple Genies require multiple variables to be assigned to, and multiple <code>HTML_clipMenu</code>s).&nbsp;
 Remember, the first parameter passed into the Genie methods is the “current” <code><var>group</var></code>.&nbsp;
-The example above <em>assumes</em> you are using the <code>groupClass</code> option (see <a href='#config_stack'>ConfigStack</a> below);
+The “unbound” example above <em>assumes</em> you are using the <code>groupClass</code> option (see <a href='#config_stack'>ConfigStack</a> below);
 maybe you should use the <code>groupTag</code> option, or perhaps better yet,
 just hard-code the <code>.closest()</code> spec into your script.&nbsp;
-You may simply modify the <code>&lt;li&gt;TEXT&lt;/li&gt;</code> in the outer <code>&lt;menu&gt;</code> but not the inner <code>&lt;ul&gt;</code>s.&nbsp;
-For instance, with a list of names, your <code>TEXT</code> may become: “insert name”, “copy name”, “cut name”, “paste name”, “delete name”,
-and your confirm dialog may become “Do you want to delete this name?”.&nbsp;
-The <code>&lt;li&gt;TEXT&lt;/li&gt;</code> in the inner <code>&lt;ul&gt;</code>s may be modified
-only if you modify or replace the <code>FormFieldGenie.TEXT</code> Object,
-or rewrite the JavaScript<abbr tm>™</abbr> that defines the <code>clip: … … …</code> value passed to the Genie.&nbsp;
-Note the <code>FormFieldGenie.TEXT</code> Object is static to the class:
-you don’t find it as a property of your Genie instance, rather it applies to <strong>all</strong> Genies;
-find it at <code>SoftMoon.WebWare.FormFieldGenie.TEXT</code>.&nbsp;
-Modify it for other languages or for more “specific” references in your application.&nbsp;
-The FormFieldGenie will add clip references to the menu that look like these examples:
+The FormFieldGenie will add clip references to the menu that look like these examples (with the default <kbd>TEXT</kbd>):
 “clip 1”, “clip 2”, “clip 3”, etc.&nbsp;
-Using the <code>FormFieldGenie.TEXT</code> Object, you can modify the word “clip” to the word (or language) you desire.&nbsp;
+Using the <code>.HTML_clipMenu_TEXT</code> Object (see above), you can modify the word “clip” to the word (or language) you desire.&nbsp;
 Embedded JavaScript<abbr tm>™</abbr> event-handler attributes may also be modified and/or expanded as appropriate to your needs.&nbsp;
+Since this menu would be typically activated by the end-user using the “context menu” keyboard-key or mouse-button,
+and since the “context menu” may need to do more than support the FormFieldGenie in <strong>your</strong> specific application,
+you may (with restrictions):
+• add additional <code>&lt;li&gt;</code> elements to the main <code>&lt;menu&gt</code>,
+• add any other <abbr>HTML</abbr> Elements within your additions,
+• add embedded <code>&lt;ul class='clips'&gt;</code>s to be filled with the current list of “clips” when the menu is updated.&nbsp;
+With “bound” menus, and <strong><em>except</em></strong> for <code>&lt;ul class='clips'&gt;</code>s,
+your menu additions are restricted from having the same class-names as any existing class-names on similar elements.
+If your menu is “bound” these additions will be ignored, and you must support them.&nbsp;
 When the menu is updated, all <code>&lt;li&gt;</code> Elements that reference copied/cut “clips” are deleted,
 and then the menu is rebuilt from scratch.&nbsp;
 After the menu is updated, a custom <code>'ffgeniemenuupdate'</code> event is fired on the <code>HTML_clipMenu</code>
@@ -605,11 +682,11 @@ The Genie itself will confirm if you want to clear the whole clipboard unless yo
 but if you do inform the Genie of this menu’s existence, it will update it automatically for you.&nbsp;
 This menu interfaces with the Genie’s innate ability to handle a “multi-clip” clipboard;
 but you don’t need to integrate the “multi-clip” functionality in your project.&nbsp;
-Perhaps you only want to allow your end-users to cop/cut/paste into a “single-clip” clipboard
+Perhaps you only want to allow your end-users to copy/cut/paste into a “single-clip” clipboard
 so they don’t get confused, or for a smaller menu with a smaller footprint on the screen, or for whatever reason.&nbsp;
 Perhaps then you need a simple “pop-up” menu like the one shown below.&nbsp;
 (¡Note again that we are <em>assuming</em> the use of the <code>groupClass</code> option like the above example!)&nbsp;
-The <code>TEXT</code> in this demo example menu below is meaningless to the Genie and you may change it to anything you like.&nbsp;
+The <kbd>TEXT</kbd> in this demo example menu <strong>below</strong> is meaningless to the Genie and you may change it to anything you like.&nbsp;
 Note that we <strong>don’t</strong> specify the “clip” instead of calculating it like in the above example demo menu;
 the Genie will use the <code>_system_</code> clip spec as defined in the <a href='#config_stack'>ConfigStack</a> prototype.&nbsp;
 Moreover, We tried <strong>not</strong> to box you in as a developer.&nbsp;
@@ -634,12 +711,33 @@ when the end-user either •right-clicks (menu-clicks) in said <code><var>group<
 •presses the “menu” key (looks kinda like this: <kbd><span>≡</span></kbd> when it is present on the keyboard)
 and keyboard-focus is “in” a <code>fieldNode</code> within said <code>group</code>,
 and style it with <abbr>CSS</abbr> so it “pops-up” (appears) at the right place at that time.&nbsp;
+If your menu is “bound,” you simply use
+<code><var>myGenie</var>.show_clipMenu(<var>event</var>, <var>group</var>, <var>container</var>)</code>
+where:
+• <code><var>event</var></code> is any event, but a keyboard event
+creates the opportunity for the end-user to return to the Element that had keyboard focus;
+• <code><var>group</var></code> is the FormFieldGenie group that the menu refers to; and
+• <code><var>container</var></code> is the <acronym>DOM</acronym> Element that the <code>HTML_clipMenu</code>
+is moved into when it “pops-up,” so it appears in the correct position on the screen
+(according to <strong>your</strong> <abbr>CSS</abbr>).&nbsp;
+“Unbound” menus <em>should</em> also have full keyboard support, by including a <code>tabindex</code> attribute
+on all <code>&lt;li&gt;</code> Elements, and the <code>.config.HTML_clipMenu_tabindex</code> option
+will automatically add this attribute to the auto-generated <code>&lt;li&gt;</code> Elements that reference the clips.&nbsp;
+Your custom JavaScript<abbr tm>™</abbr> should support the arrow-keys
+<nobr>(<kbd><span>↑</span></kbd>,</nobr> <kbd><span>↓</span></kbd>, <kbd><span>←</span></kbd>, <nobr><kbd><span>→</span></kbd>)</nobr> to navigate the menu,
+the <kbd><span>&crarr;Enter</span></kbd> and <kbd><spand>Spacebar</spand></kbd> keys to make a selection,
+the <kbd><span>Esc</span></kbd> and maybe even the menu <kbd><span>≡</span></kbd> keys to exit without a selection made,
+etc.&nbsp;
 It would typically need additional Event handlers so it “pops down” (disappears) when a selection is made;
-and/or Event-handlers attached to the body to do the same thing if clicked elsewhere,
+and/or maybe Event-handlers attached to the body to do the same thing if clicked elsewhere,
 or another form-field somewhere else gets focus, etc.&nbsp;
 Technically speaking, you should also include full
 <a href='https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Attributes/aria-haspopup' target='Mozilla'><abbr>ARIA</abbr> <code>haspopup</code></a>
-support, but implementing all that is beyond the scope of these instructions.</p>
+support, but implementing all that is beyond the scope of these instructions.&nbsp;
+If you “bind” your menu, all that is handled for you.&nbsp;
+“Bound” menus also get custom <code>"popUp"</code> and <code>"popDown"</code> events
+at the appropriate time, and the event that triggered the pop-state-change
+can be found in the custom-event’s <code>.detail</code> property.</p>
 
 
 <h2>The publicly accessible <topic>properties</topic> of a FormFieldGenie instance are:</h2>
@@ -652,11 +750,14 @@ support, but implementing all that is beyond the scope of these instructions.</p
 		Any time you pass an <var>opts</var> (options) object to any method, those options are temporarily stacked
 		onto this stack while the method is operating.</dd>
 	<dt>.clipboard</dt>
-		<dd>This holds all the clipboard data for your Genie instance.</dd>
-	<dt>.HTML_clipmenu</dt>
+		<dd>This Object holds all the clipboard data for your Genie instance.</dd>
+	<dt>.HTML_clipMenu</dt>
 		<dd>This points to the <abbr>HTML</abbr> that is the “menu” shown to the end-user
 		with the <strong>“multi-clip”</strong> clipboard data for your Genie instance.&nbsp;
 		If you are not implementing a “multi-clip” interface, this property should be <code>undefined</code>.</dd>
+	<dt>.HTML_clipMenu_TEXT</dt>
+		<dd>This Object references the <abbr>HTML</abbr>’s <kbd>TEXT</kbd> in the “menu”
+		and can be replaced with references to different customized text or languages.</dd>
 	<dt>.name</dt>
 		<dd>The name of your specific Genie.&nbsp;
 		It may not contain the comma <code>,</code> character or line-endings.&nbsp;
@@ -686,6 +787,16 @@ support, but implementing all that is beyond the scope of these instructions.</p
 		 <dd>This method is also called internally by other user-methods as a worker-method, but you may utilize it if manually working with the clipboard.</dd>
 	<dt>update_HTML_clipMenu()</dt>
 		 <dd>This method is also called internally by other user-methods as a worker-method, but you may utilize it if manually updating the clipboard.</dd>
+	<dt>show_clipMenu(event, group, container)</dt>
+		 <dd>If your menu is “bound”,
+		 call this method from your custom event hander that triggers opening the menu (“pop-up”).&nbsp;
+		 Pass along the <code>event</code> from your event-handler,
+		 and custom-calculate/-specify the <code>group</code> and <code>container</code> for <strong>your</strong> <abbr>HTML</abbr>.&nbsp;
+		 The <code><var>group</var></code> is the one associated with this menu’s operations,
+		 and the <code><var>container</var></code> is the <acronym>DOM</acronym> Element that the menu will be placed into as it “pops-up.”</dd>
+	<dt>bind_clipMenu(<var>Boolean</var> <default>true</default> ‖ HTML_clipMenu)</dt>
+		 <dd>Passing a <code>Boolean</code> value (<code>true</code> is default) will either bind or unbind the current <code><var>myGenie</var>.HTML_clipMenu</code>.&nbsp;
+		 Passing an <abbr>HTML</abbr> Element will bind that element as the new <code>.HTML_clipMenu</code>.</dd>
 </dl>
 
 <h2>The publicly accessible (and user-replaceable) <topic>worker-methods</topic> of a FormFieldGenie instance are:</h2>
@@ -717,6 +828,17 @@ support, but implementing all that is beyond the scope of these instructions.</p
 		so the “catchKey” hook is internal to allow you to “use” additional “onkeydown” handlers without having to add them to the element.&nbsp;
 		Alternatively, you may utilize the “<code>myGenie.config.eventRegistrar()</code>” functional option (see the ConfigStack options below)
 		to add on a handler that calls this method, or any additional handlers, to newly cloned form fields as needed.</dd>
+	<dt>clipMenu_controller(event)</dt>
+	<dt>handleEvent(event)</dt>
+		<dd>These two properties are one-in-the-same aliases for the method that handles all end-user interaction with “bound” menus.</dd>
+	<dt>handleKeydownInMenu(event)</dt>
+	  <dd>Does what it says and returns <code>true</code> if the menu should stay open, or <code>false</code> if the menu should close.</dd>
+	<dt>onGenieMenuSelect(event)</dt>
+		<dd>Manages an end-user selection and calls the copy/cut/paste/delete/etc. action.&nbsp;
+		It returns the value that the action returns.&nbsp;
+		In addition, the <code>event</code> Object has one or two additional properties modified:
+		• <code>.menuSelectReturnStatus</code> is <code>true</code> if the menu should stay open, <code>false</code> if the menu should close; and
+		• <code>.opStatus</code> indicates the meta-status of the user-action.</dd>
 </dl>
 
 <h2 id='config_stack'>The publicly accessible properties and <default>default values</default>
@@ -856,7 +978,7 @@ of a <topic>FormFieldGenie.ConfigStack</topic> (myGenie.config) instance are:</h
 			of the new <code>field</code> compared to the <code>field</code> passed in.&nbsp;
 		The <code>cbParams</code> variable is the user’s options (see above).
 		The Function should pass back a string of the new name, or <code>null</code>.
-		If a string is returned, the name attribute of the <abbr>DOM</abbr> object will be set to that value;
+		If a string is returned, the name attribute of the <abbr>DOM</abbr> Element will be set to that value;
 			no need for your function to alter the name directly, unless returning <code>null</code>.
 		If <code>null</code> is returned, the usual process of updating the name continues.&nbsp;
 		The <code>updateName()</code> function may do anything it needs from partial updating the name directly
@@ -903,6 +1025,15 @@ of a <topic>FormFieldGenie.ConfigStack</topic> (myGenie.config) instance are:</h
 		<dd>Used if you cut/copy/paste w/out specifying the clipboard “clip” name.&nbsp;
 		See <code>clip</code> in the <a href='#options'>options</a> section below for more information.</dd>
 
+	<dt>clear_clips_whenRetrieved: <var>Boolean</var> <default>false</default></dt>
+		<dd>¿Do we remove the clip from the clipboard when pasting it to unclutter the clipboard and/or to free up memory,
+		or do we leave it there so we can paste it multiple times?</dd>
+	
+	<dt>HTML_clipMenu_tabindex: <var>string</var> ‖ <code>null</code> <default>"-1"</default></dt>
+		<dd>All auto-generated <code>&lt;li&gt;</code> items in an <code>HTML_clipMenu</code>
+		will get a <code>tabindex</code> attribute with this value,
+		unless this is <code>==null</code>.</dd>
+
 	<dt>only_clips_inAll: <code><default>true</default> ‖ false</code></dt>
 		<dd>When using <code>Genie.getClip('all clips')</code>, ¿ only return the <code>clipboard.clips</code> array ?
 		<abbr title='versus'>vs.</abbr> said array with the other properties of <code>clipboard</code> appended.&nbsp;
@@ -912,6 +1043,10 @@ of a <topic>FormFieldGenie.ConfigStack</topic> (myGenie.config) instance are:</h
 		<dd>When using <code>Genie.getClip('all clips')</code>, ¿ avoid clips in <code>clipboard</code> with names that contain “<code>_system_</code>” ?&nbsp;
 		This does <strong>not</strong> apply to clips in the <code>clipboard.clips</code> array.&nbsp;
 		This is an advanced feature.</dd>
+
+	<dt>namedElements: <var>string</var> <default>"input, textarea, select, button"</default></dt>
+		<dd>This string must work with querySelectorAll();&nbsp; These are elements who’s names will be updated.&nbsp;
+		¿Maybe you want to use <code>"*[name]"</code> instead to update other Elements with non-standard “name” attributes?</dd>
 
 	<dt>userDataInputTypes: <default>['text', 'search', 'tel', 'url', 'email', 'password', 'datetime', 'date',
 	'month', 'week', 'time', 'datetime-local', 'number', 'color', 'file']</default></dt>
@@ -940,7 +1075,7 @@ However, some options only apply to specific methods <strong>as they are being c
 any similar option in the <a href='#config_stack'>ConfigStack</a> will be ignored.</p>
 
 <p>The <topic>options</topic> object may contain any properties found in the <a href='#config_stack'><code>FormFieldGenie.ConfigStack</code></a>
-(others will be ignored).&nbsp;
+(most others will be ignored).&nbsp;
 Some (as noted) will be ignored if passed when creating a new FormFieldGenie instance
 and are only valid when calling a method;
 those “methodical” properties are noted below:</p>
@@ -984,10 +1119,10 @@ those “methodical” properties are noted below:</p>
 		recognizes the string pattern <code>"clip <var>num</var>"</code> (where <code><var>num</var></code> 
 		is a positive number) and this is the same as passing in a simple <var>number</var>;
 		e.g. <code>{clip:1}</code> is the same as <code>{clip:"clip 1"}</code>.&nbsp;
-		These “numbered” clips are stored internally in the <code>instance.clipboard.clips</code> array.&nbsp;
-		Every other string value you pass in for <code>clip</code> refers to a property of <code>instance.clipboard</code>;
+		These “numbered” clips are stored internally in the <code><var>instance</var>.clipboard.clips</code> array.&nbsp;
+		Every other string value you pass in for <code>clip</code> refers to a property of <code><var>instance</var>.clipboard</code>;
 		the clipboard itself is an array, so oddly if you pass the <strong>string</strong> <code>"1"</code> 
-		like so: <code>{clip:"1"}</code> you will refer to <code>instance.clipboard[1]</code>
+		like so: <code>{clip:"1"}</code> you will refer to <code><var>instance</var>.clipboard[1]</code>
 		</dd>
 </dl>
 
